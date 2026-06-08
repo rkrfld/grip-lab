@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import workoutsData from './data/workouts.json'
 import { DayPicker } from './components/DayPicker'
 import { WorkoutBanner } from './components/WorkoutBanner'
 import { ExerciseList } from './components/ExerciseList'
 import { TimerOverlay } from './components/TimerOverlay'
 import { SettingsToggle } from './components/SettingsToggle'
+import { SplashScreen } from './components/SplashScreen'
 import { useSettings } from './hooks/useSettings'
 import type { TimerConfig } from './hooks/useTimer'
 import type { Exercise } from './components/ExerciseCard'
@@ -32,6 +33,9 @@ function formatDate() {
 }
 
 export default function App() {
+  const [splash, setSplash] = useState(true)
+  const hideSplash = useCallback(() => setSplash(false), [])
+
   const [selectedDay, setSelectedDay] = useState<DayName>(today)
   const [doneMap, setDoneMap] = useState<Record<string, Set<string>>>({})
   const [timerConfig, setTimerConfig] = useState<TimerConfig | null>(null)
@@ -59,6 +63,7 @@ export default function App() {
 
   return (
     <>
+      {splash && <SplashScreen onDone={hideSplash} />}
       <div style={{ '--menucol': menuColor } as React.CSSProperties} className="min-h-[100dvh] flex flex-col items-center">
         <div
           className="w-full max-w-[460px]"
