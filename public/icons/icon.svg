@@ -1,5 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" fill="#0e0d0b"/>
-  <text x="256" y="340" font-family="Arial Black, sans-serif" font-weight="900" font-size="260" text-anchor="middle" fill="#ff4a1c">G</text>
-  <text x="256" y="460" font-family="Arial, sans-serif" font-size="72" font-weight="700" text-anchor="middle" fill="#f3ede0" letter-spacing="8">LAB</text>
+  <text
+    x="256" y="256"
+    font-family="Arial Black, sans-serif"
+    font-weight="900"
+    font-size="340"
+    text-anchor="middle"
+    dominant-baseline="central"
+    fill="#ff4a1c"
+  >G</text>
 </svg>
