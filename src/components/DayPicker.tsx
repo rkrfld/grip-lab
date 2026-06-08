@@ -16,10 +16,7 @@ export function DayPicker({ days, selected, today, onSelect }: Props) {
   const sorted = ORDER.filter(d => days.includes(d))
 
   return (
-    <div style={{
-      display: 'flex', gap: 6, overflowX: 'auto', padding: '0 0 4px',
-      scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch',
-    }}>
+    <div className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
       {sorted.map(name => {
         const isActive = name === selected
         const isToday = name === today
@@ -27,24 +24,16 @@ export function DayPicker({ days, selected, today, onSelect }: Props) {
           <button
             key={name}
             onClick={() => onSelect(name)}
-            style={{
-              flex: '0 0 auto',
-              border: `1px solid ${isActive ? 'var(--chalk)' : 'var(--line)'}`,
-              background: isActive ? 'var(--chalk)' : 'var(--bg2)',
-              color: isActive ? '#000' : 'var(--muted)',
-              borderRadius: 99,
-              padding: '9px 14px',
-              fontSize: 12,
-              fontWeight: isActive ? 600 : 500,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              transition: 'background 0.18s, color 0.18s, border-color 0.18s',
-              display: 'flex', alignItems: 'center', gap: 4,
-            }}
+            className={[
+              'flex-none flex items-center gap-1 rounded-full px-3.5 py-2 text-[12px] tracking-[0.08em] uppercase transition-all duration-[180ms]',
+              isActive
+                ? 'bg-chalk text-black border border-chalk font-semibold'
+                : 'bg-bg2 text-muted border border-line font-medium',
+            ].join(' ')}
           >
             {SHORT[name] ?? name}
             {isToday && (
-              <span style={{ color: isActive ? 'var(--accent)' : 'var(--accent)', fontSize: 14, lineHeight: 1 }}>•</span>
+              <span className="text-accent text-sm leading-none">•</span>
             )}
           </button>
         )

@@ -42,6 +42,7 @@ export default function App() {
   const doneCount = doneSet.size
   const totalCount = plan.exercises.length
   const progress = totalCount > 0 ? (doneCount / totalCount) * 100 : 0
+  const menuColor = plan.color === 'cool' ? 'var(--cool)' : 'var(--accent)'
 
   function toggleDone(id: string) {
     setDoneMap(prev => {
@@ -56,34 +57,25 @@ export default function App() {
     setTimerConfig(null)
   }
 
-  const menuColor = plan.color === 'cool' ? 'var(--cool)' : 'var(--accent)'
-
   return (
     <>
       <div style={{ '--menucol': menuColor } as React.CSSProperties}>
-        <div style={{ maxWidth: 460, margin: '0 auto', padding: '0 18px' }}>
-          <header style={{ padding: '26px 0 14px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--muted)' }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 12px var(--accent)', display: 'inline-block' }} />
+        <div className="max-w-[460px] mx-auto px-[18px]">
+
+          <header className="pt-[26px] pb-[14px]">
+            <div className="flex items-center gap-2 text-[11px] tracking-[0.28em] uppercase text-muted">
+              <span className="w-[7px] h-[7px] rounded-full bg-accent shadow-[0_0_12px_var(--color-accent)] inline-block" />
               wallhatesme · grip lab
             </div>
-            <h1 style={{
-              fontFamily: "'Big Shoulders Display', sans-serif",
-              fontWeight: 900,
-              fontSize: 'clamp(48px, 17vw, 76px)',
-              lineHeight: 0.84,
-              letterSpacing: '-0.01em',
-              marginTop: 6,
-              textTransform: 'uppercase',
-            }}>
-              HAND<br /><span style={{ color: 'var(--accent)' }}>LAB</span>
+            <h1 className="font-display font-black text-[clamp(48px,17vw,76px)] leading-[0.84] tracking-[-0.01em] uppercase mt-1.5">
+              HAND<br /><span className="text-accent">LAB</span>
             </h1>
-            <div style={{ marginTop: 10, fontSize: 12, color: 'var(--muted)', letterSpacing: '0.04em' }}>
+            <div className="mt-2.5 text-[12px] text-muted tracking-[0.04em]">
               {formatDate()}
             </div>
           </header>
 
-          <div style={{ margin: '20px 0 6px' }}>
+          <div className="mt-5 mb-1.5">
             <DayPicker
               days={Object.keys(workouts)}
               selected={selectedDay}
@@ -99,16 +91,13 @@ export default function App() {
             color={plan.color}
           />
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, fontSize: 12, color: 'var(--muted)' }}>
+          <div className="flex items-center gap-2.5 mb-4 text-[12px] text-muted">
             <span>{doneCount} / {totalCount}</span>
-            <div style={{ flex: 1, height: 6, borderRadius: 99, background: 'var(--line)', overflow: 'hidden' }}>
-              <div style={{
-                height: '100%',
-                width: `${progress}%`,
-                background: menuColor,
-                transition: 'width 0.35s cubic-bezier(0.3,1,0.4,1)',
-                borderRadius: 99,
-              }} />
+            <div className="flex-1 h-1.5 rounded-full bg-line overflow-hidden">
+              <div
+                className="h-full rounded-full transition-[width] duration-300 ease-[cubic-bezier(0.3,1,0.4,1)]"
+                style={{ width: `${progress}%`, background: menuColor }}
+              />
             </div>
           </div>
 
@@ -120,9 +109,9 @@ export default function App() {
             onOpenTimer={setTimerConfig}
           />
 
-          <footer style={{ marginTop: 22, textAlign: 'center', fontSize: 10.5, color: 'var(--muted)', letterSpacing: '0.05em', lineHeight: 1.7 }}>
+          <footer className="mt-[22px] text-center text-[10.5px] text-muted tracking-[0.05em] leading-[1.7]">
             Warm the fingers up before any hard squeeze. Stop on sharp pain in fingers/elbow.<br />
-            <b style={{ color: 'var(--accent)', fontWeight: 500 }}>No</b> heavy grip training on days after hard climbing.
+            <b className="text-accent font-medium">No</b> heavy grip training on days after hard climbing.
           </footer>
         </div>
       </div>

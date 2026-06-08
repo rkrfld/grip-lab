@@ -11,7 +11,7 @@ interface Props {
 
 export function ExerciseList({ exercises, doneSet, animKey, onToggle, onOpenTimer }: Props) {
   return (
-    <div key={animKey} style={{ animation: 'slideIn 0.25s ease both' }}>
+    <div key={animKey} className="animate-fade-in">
       {exercises.map(ex => (
         <ExerciseCard
           key={ex.id}

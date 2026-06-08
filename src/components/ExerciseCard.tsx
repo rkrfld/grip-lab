@@ -49,57 +49,36 @@ export function ExerciseCard({ exercise, done, onToggle, onOpenTimer }: Props) {
   }
 
   return (
-    <div style={{
-      display: 'flex', gap: 12, alignItems: 'flex-start',
-      border: done ? '1px solid transparent' : '1px solid var(--line)',
-      background: done ? 'var(--bg2)' : 'var(--card)',
-      borderRadius: 'var(--radius)', padding: 14, marginBottom: 10,
-      opacity: done ? 0.5 : 1,
-      transition: 'opacity 0.2s, background 0.2s, border-color 0.2s',
-      animation: 'slideIn 0.22s ease both',
-    }}>
+    <div className={[
+      'flex gap-3 items-start rounded-[14px] p-[14px] mb-2.5 transition-all duration-200 animate-slide-in',
+      done ? 'opacity-50 border border-transparent bg-bg2' : 'border border-line bg-card',
+    ].join(' ')}>
       <button
         onClick={onToggle}
-        style={{
-          flex: '0 0 auto', width: 28, height: 28,
-          borderRadius: 8,
-          border: done ? 'none' : '2px solid var(--line)',
-          background: done ? 'var(--good)' : 'transparent',
-          display: 'grid', placeItems: 'center',
-          marginTop: 1,
-          transition: 'background 0.18s, border-color 0.18s',
-          animation: done ? 'scalePulse 0.3s ease' : 'none',
-        }}
+        className={[
+          'flex-none w-7 h-7 rounded-lg grid place-items-center mt-[1px] transition-all duration-[180ms]',
+          done
+            ? 'bg-good border-good animate-scale-pulse'
+            : 'border-2 border-line bg-transparent',
+        ].join(' ')}
       >
         {done && <CheckIcon />}
       </button>
 
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          fontSize: 14, lineHeight: 1.45,
-          textDecoration: done ? 'line-through' : 'none',
-          color: done ? 'var(--muted)' : 'var(--chalk)',
-          transition: 'color 0.2s',
-        }}>
+      <div className="flex-1 min-w-0">
+        <div className={[
+          'text-[14px] leading-[1.45] transition-colors duration-200',
+          done ? 'line-through text-muted' : 'text-chalk',
+        ].join(' ')}>
           {title}
         </div>
         {subtitle && (
-          <div style={{ fontSize: 11.5, color: 'var(--muted)', marginTop: 3 }}>
-            {subtitle}
-          </div>
+          <div className="text-[11.5px] text-muted mt-[3px]">{subtitle}</div>
         )}
         {(type === 'timer' || type === 'repeater') && (
           <button
             onClick={handleTimer}
-            style={{
-              marginTop: 11, display: 'inline-flex', alignItems: 'center', gap: 7,
-              border: '1px solid var(--menucol)', color: 'var(--menucol)',
-              background: 'transparent', borderRadius: 99, padding: '7px 13px',
-              fontSize: 11.5, fontWeight: 500, letterSpacing: '0.05em',
-              textTransform: 'uppercase', transition: 'opacity 0.18s',
-            }}
-            onPointerDown={e => (e.currentTarget.style.transform = 'scale(0.96)')}
-            onPointerUp={e => (e.currentTarget.style.transform = 'scale(1)')}
+            className="mt-[11px] inline-flex items-center gap-[7px] border border-[var(--menucol)] text-[var(--menucol)] rounded-full px-[13px] py-[7px] text-[11.5px] font-medium tracking-[0.05em] uppercase transition-opacity active:scale-95"
           >
             <PlayIcon />
             {type === 'timer'
@@ -110,7 +89,7 @@ export function ExerciseCard({ exercise, done, onToggle, onOpenTimer }: Props) {
       </div>
 
       {figure && (
-        <div style={{ opacity: done ? 0.6 : 1, transition: 'opacity 0.2s', alignSelf: 'center' }}>
+        <div className={`${done ? 'opacity-60' : ''} transition-opacity duration-200 self-center`}>
           <Figure name={figure} />
         </div>
       )}

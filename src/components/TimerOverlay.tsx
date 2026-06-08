@@ -38,46 +38,24 @@ export function TimerOverlay({ config, settings, onClose }: Props) {
   return (
     <div
       onClick={e => { if (e.target === e.currentTarget) handleClose() }}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 50,
-        background: 'rgba(8,7,6,.88)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        padding: 24,
-        paddingBottom: `max(24px, calc(24px + env(safe-area-inset-bottom)))`,
-        animation: 'slideUp 0.28s cubic-bezier(0.3,1,0.4,1) both',
-      }}
+      className="fixed inset-0 z-50 bg-[rgba(8,7,6,0.88)] backdrop-blur-[10px] flex flex-col items-center justify-center p-6 pb-[max(24px,calc(24px+env(safe-area-inset-bottom)))] animate-slide-up"
     >
-      <div style={{
-        fontFamily: "'Big Shoulders Display', sans-serif",
-        fontWeight: 800,
-        fontSize: 'clamp(34px, 12vw, 56px)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.02em',
-        lineHeight: 0.9,
-        textAlign: 'center',
-        color: isDone ? 'var(--good)' : color,
-        transition: 'color 0.2s',
-      }}>
+      <div
+        className="font-display font-extrabold text-[clamp(34px,12vw,56px)] uppercase tracking-[0.02em] leading-[0.9] text-center transition-colors duration-200"
+        style={{ color: isDone ? 'var(--good)' : color }}
+      >
         {phase}
       </div>
 
       {subLabel && (
-        <div style={{ fontSize: 12, color: 'var(--muted)', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: 8 }}>
+        <div className="text-[12px] text-muted tracking-[0.18em] uppercase mt-2">
           {subLabel}
         </div>
       )}
 
-      <div style={{
-        position: 'relative',
-        width: 'min(70vw, 260px)',
-        aspectRatio: '1',
-        margin: '26px 0',
-      }}>
-        <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
-          <circle cx="50" cy="50" r="44" fill="none" stroke="var(--line)" strokeWidth="7" />
+      <div className="relative w-[min(70vw,260px)] aspect-square my-[26px]">
+        <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+          <circle cx="50" cy="50" r="44" fill="none" stroke="#2c2820" strokeWidth="7" />
           <circle
             cx="50" cy="50" r="44"
             fill="none"
@@ -89,36 +67,22 @@ export function TimerOverlay({ config, settings, onClose }: Props) {
             style={{ transition: 'stroke-dashoffset 0.25s linear, stroke 0.2s' }}
           />
         </svg>
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'grid', placeItems: 'center',
-          fontFamily: "'Big Shoulders Display', sans-serif",
-          fontWeight: 900,
-          fontSize: 'clamp(56px, 20vw, 92px)',
-        }}>
+        <div className="absolute inset-0 grid place-items-center font-display font-black text-[clamp(56px,20vw,92px)]">
           {isDone ? '✓' : secondsLeft}
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 12 }}>
+      <div className="flex gap-3">
         <button
           onClick={handleClose}
-          style={{
-            border: '1px solid var(--line)', background: 'var(--card)', color: 'var(--chalk)',
-            borderRadius: 99, padding: '13px 26px',
-            fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase',
-          }}
+          className="border border-line bg-card text-chalk rounded-full px-[26px] py-[13px] text-[12px] tracking-[0.08em] uppercase"
         >
           Close
         </button>
         {isActive && (
           <button
             onClick={togglePause}
-            style={{
-              border: '1px solid var(--chalk)', background: 'var(--chalk)', color: '#000',
-              borderRadius: 99, padding: '13px 26px',
-              fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
-            }}
+            className="border border-chalk bg-chalk text-black rounded-full px-[26px] py-[13px] text-[12px] font-semibold tracking-[0.08em] uppercase"
           >
             {isPaused ? 'Resume' : 'Pause'}
           </button>

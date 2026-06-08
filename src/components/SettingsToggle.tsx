@@ -16,29 +16,13 @@ export function SettingsToggle({ soundEnabled, hapticEnabled, onToggleSound, onT
       {open && (
         <div
           onClick={() => setOpen(false)}
-          style={{ position: 'fixed', inset: 0, zIndex: 39 }}
+          className="fixed inset-0 z-39"
         />
       )}
 
-      <div style={{
-        position: 'fixed',
-        bottom: `max(24px, calc(20px + env(safe-area-inset-bottom)))`,
-        right: 20,
-        zIndex: 40,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: 10,
-      }}>
+      <div className="fixed bottom-[max(24px,calc(20px+env(safe-area-inset-bottom)))] right-5 z-40 flex flex-col items-end gap-2.5">
         {open && (
-          <div style={{
-            background: 'var(--card)',
-            border: '1px solid var(--line)',
-            borderRadius: 'var(--radius)',
-            padding: '4px 0',
-            minWidth: 180,
-            animation: 'slideUp 0.2s cubic-bezier(0.3,1,0.4,1) both',
-          }}>
+          <div className="bg-card border border-line rounded-[14px] py-1 min-w-[180px] animate-slide-up">
             <ToggleRow
               label="Sound"
               enabled={soundEnabled}
@@ -56,15 +40,10 @@ export function SettingsToggle({ soundEnabled, hapticEnabled, onToggleSound, onT
 
         <button
           onClick={() => setOpen(o => !o)}
-          style={{
-            width: 44, height: 44, borderRadius: '50%',
-            background: open ? 'var(--chalk)' : 'var(--card)',
-            border: '1px solid var(--line)',
-            color: open ? '#000' : 'var(--muted)',
-            display: 'grid', placeItems: 'center',
-            transition: 'background 0.18s, color 0.18s',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
-          }}
+          className={[
+            'w-11 h-11 rounded-full grid place-items-center border border-line transition-all duration-[180ms] shadow-[0_4px_16px_rgba(0,0,0,0.4)]',
+            open ? 'bg-chalk text-black' : 'bg-card text-muted',
+          ].join(' ')}
         >
           <Settings2 size={18} />
         </button>
@@ -82,31 +61,24 @@ function ToggleRow({ label, enabled, icon, onToggle }: {
   return (
     <button
       onClick={onToggle}
-      style={{
-        width: '100%', display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '10px 14px', background: 'none',
-        color: enabled ? 'var(--chalk)' : 'var(--muted)',
-        fontSize: 12, letterSpacing: '0.05em', textTransform: 'uppercase',
-        transition: 'color 0.15s',
-      }}
+      className={[
+        'w-full flex items-center justify-between px-3.5 py-2.5 text-[12px] tracking-[0.05em] uppercase transition-colors duration-150',
+        enabled ? 'text-chalk' : 'text-muted',
+      ].join(' ')}
     >
-      <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <span className="flex items-center gap-2">
         {icon} {label}
       </span>
-      <span style={{
-        width: 32, height: 18, borderRadius: 99,
-        background: enabled ? 'var(--accent)' : 'var(--line)',
-        position: 'relative', transition: 'background 0.2s',
-        flexShrink: 0,
-      }}>
-        <span style={{
-          position: 'absolute',
-          top: 3, left: enabled ? 'calc(100% - 15px)' : 3,
-          width: 12, height: 12, borderRadius: '50%',
-          background: 'var(--chalk)',
-          transition: 'left 0.2s cubic-bezier(0.3,1,0.4,1)',
-        }} />
+      <span
+        className={[
+          'w-8 h-[18px] rounded-full relative flex-none transition-colors duration-200',
+          enabled ? 'bg-accent' : 'bg-line',
+        ].join(' ')}
+      >
+        <span
+          className="absolute top-[3px] w-3 h-3 rounded-full bg-chalk transition-[left] duration-200"
+          style={{ left: enabled ? 'calc(100% - 15px)' : '3px' }}
+        />
       </span>
     </button>
   )
