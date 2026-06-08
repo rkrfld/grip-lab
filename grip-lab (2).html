@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0e0d0b">
+<title>GRIP LAB — wallhatesme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e0d0b; --bg2:#161410; --card:#1b1813; --line:#2c2820;
+    --chalk:#f3ede0; --muted:#8a8273; --accent:#ff4a1c; --accent-dim:#7a2d18;
+    --cool:#7fb4c9; --cool-dim:#2f4750; --good:#9fd17a; --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{background:var(--bg);}
+  body{
+    font-family:'DM Mono',monospace;color:var(--chalk);min-height:100dvh;
+    background:
+      radial-gradient(120% 90% at 90% -10%, rgba(255,74,28,.12), transparent 55%),
+      radial-gradient(120% 80% at -10% 110%, rgba(127,180,201,.08), transparent 50%),
+      var(--bg);
+    padding:0 0 110px;overflow-x:hidden;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+  }
+  .wrap{position:relative;z-index:1;max-width:460px;margin:0 auto;padding:0 18px;}
+
+  header{padding:26px 0 14px;}
+  .brand{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);}
+  .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);}
+  h1{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:clamp(48px,17vw,76px);line-height:.84;letter-spacing:-.01em;margin-top:6px;text-transform:uppercase;}
+  h1 span{color:var(--accent);}
+  .today{margin-top:10px;font-size:12px;color:var(--muted);letter-spacing:.04em;}
+
+  .days{display:flex;gap:6px;margin:20px 0 6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+  .days::-webkit-scrollbar{display:none;}
+  .day{flex:0 0 auto;border:1px solid var(--line);background:var(--bg2);color:var(--muted);border-radius:99px;padding:9px 14px;font-size:12px;font-weight:500;letter-spacing:.08em;cursor:pointer;text-transform:uppercase;transition:.18s;}
+  .day.active{background:var(--chalk);color:#000;border-color:var(--chalk);font-weight:600;}
+  .day.is-today::after{content:"•";margin-left:5px;color:var(--accent);}
+
+  .banner{margin:14px 0 18px;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(135deg,var(--card),var(--bg2));overflow:hidden;position:relative;}
+  .banner::after{content:"";position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,var(--tint,rgba(255,74,28,.10)));}
+  .banner-in{padding:16px 18px;position:relative;z-index:1;}
+  .menu-tag{font-size:11px;letter-spacing:.22em;color:var(--menucol,var(--accent));text-transform:uppercase;font-weight:500;}
+  .menu-name{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:30px;line-height:1;margin:5px 0 7px;text-transform:uppercase;}
+  .menu-focus{font-size:12.5px;color:var(--muted);line-height:1.5;}
+
+  .prog-row{display:flex;align-items:center;gap:10px;margin:0 0 16px;font-size:12px;color:var(--muted);}
+  .prog-bar{flex:1;height:6px;border-radius:99px;background:var(--line);overflow:hidden;}
+  .prog-fill{height:100%;width:0;background:var(--menucol,var(--accent));transition:width .35s cubic-bezier(.3,1,.4,1);}
+
+  .ex{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:10px;transition:.2s;}
+  .ex.done{opacity:.5;border-color:transparent;background:var(--bg2);}
+  .check{flex:0 0 auto;width:28px;height:28px;border-radius:8px;border:2px solid var(--line);background:transparent;cursor:pointer;display:grid;place-items:center;margin-top:1px;transition:.18s;}
+  .check svg{width:16px;height:16px;stroke:#000;stroke-width:3.4;fill:none;stroke-dasharray:24;stroke-dashoffset:24;transition:stroke-dashoffset .25s ease;}
+  .ex.done .check{background:var(--good);border-color:var(--good);}
+  .ex.done .check svg{stroke-dashoffset:0;}
+  .ex-body{flex:1;min-width:0;}
+  .ex-title{font-size:14px;line-height:1.45;transition:.2s;}
+  .ex.done .ex-title{text-decoration:line-through;color:var(--muted);}
+  .ex-sub{font-size:11.5px;color:var(--muted);margin-top:3px;}
+  .timer-btn{margin-top:11px;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--menucol,var(--accent));color:var(--menucol,var(--accent));background:transparent;border-radius:99px;padding:7px 13px;font-family:'DM Mono',monospace;font-size:11.5px;font-weight:500;letter-spacing:.05em;cursor:pointer;text-transform:uppercase;transition:.18s;}
+  .timer-btn:active{transform:scale(.96);}
+  .timer-btn svg{width:13px;height:13px;}
+
+  /* grip illustration */
+  .fig{flex:0 0 auto;width:58px;height:58px;align-self:center;display:grid;place-items:center;
+    border:1px solid var(--line);border-radius:12px;background:var(--bg2);}
+  .fig svg{width:46px;height:46px;fill:none;stroke:var(--chalk);stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;opacity:.92;}
+  .fig svg .eq{stroke:var(--menucol,var(--accent));}
+  .ex.done .fig{opacity:.6;}
+
+  .restday{text-align:center;padding:8px 0 0;}
+  .restday .big{font-family:'Big Shoulders Display',sans-serif;font-size:13px;letter-spacing:.2em;color:var(--cool);}
+
+  footer{margin-top:22px;text-align:center;font-size:10.5px;color:var(--muted);letter-spacing:.05em;line-height:1.7;}
+  footer b{color:var(--accent);font-weight:500;}
+
+  .overlay{position:fixed;inset:0;z-index:50;background:rgba(8,7,6,.86);backdrop-filter:blur(8px);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+  .overlay.show{display:flex;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;}to{opacity:1;}}
+  .t-label{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:clamp(34px,12vw,56px);text-transform:uppercase;letter-spacing:.02em;line-height:.9;text-align:center;transition:color .2s;}
+  .t-sub{font-size:12px;color:var(--muted);letter-spacing:.18em;text-transform:uppercase;margin-top:8px;}
+  .ring-wrap{position:relative;width:min(70vw,260px);aspect-ratio:1;margin:26px 0;}
+  .ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg);}
+  .ring-bg{fill:none;stroke:var(--line);stroke-width:7;}
+  .ring-fg{fill:none;stroke:var(--accent);stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset .25s linear,stroke .2s;}
+  .t-count{position:absolute;inset:0;display:grid;place-items:center;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:clamp(56px,20vw,92px);}
+  .t-controls{display:flex;gap:12px;margin-top:6px;}
+  .t-btn{border:1px solid var(--line);background:var(--card);color:var(--chalk);border-radius:99px;padding:13px 26px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;cursor:pointer;text-transform:uppercase;}
+  .t-btn.primary{background:var(--chalk);color:#000;border-color:var(--chalk);font-weight:600;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="dot"></span> wallhatesme · grip lab</div>
+    <h1>HAND<br><span>LAB</span></h1>
+    <div class="today" id="today"></div>
+  </header>
+
+  <div class="days" id="days"></div>
+
+  <div class="banner" id="banner">
+    <div class="banner-in">
+      <div class="menu-tag" id="menuTag"></div>
+      <div class="menu-name" id="menuName"></div>
+      <div class="menu-focus" id="menuFocus"></div>
+    </div>
+  </div>
+
+  <div class="prog-row" id="progRow">
+    <span id="progTxt">0 / 0</span>
+    <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+  </div>
+
+  <div id="list"></div>
+
+  <footer>
+    Warm the fingers up before any hard squeeze. Stop on sharp pain in fingers/elbow.<br>
+    <b>No</b> heavy grip training on days after hard climbing.
+  </footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="t-label" id="tLabel">READY</div>
+  <div class="t-sub" id="tSub"></div>
+  <div class="ring-wrap">
+    <svg viewBox="0 0 100 100">
+      <circle class="ring-bg" cx="50" cy="50" r="44"></circle>
+      <circle class="ring-fg" id="ringFg" cx="50" cy="50" r="44"></circle>
+    </svg>
+    <div class="t-count" id="tCount">0</div>
+  </div>
+  <div class="t-controls">
+    <button class="t-btn" id="tStop">Close</button>
+    <button class="t-btn primary" id="tPause">Pause</button>
+  </div>
+</div>
+
+<script>
+const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+/* ---- grip illustrations (viewBox 0 0 64 64) ---- */
+const FIGS = {
+  gripper:`<svg viewBox="0 0 64 64">
+    <path class="eq" d="M46 28a4 4 0 0 1 0 8M46 28a4 4 0 0 0 0 8"/>
+    <path class="eq" d="M46 28 20 22M46 36 20 42"/>
+    <path d="M22 22c0-5 4-8 7-7M28 23c0-5 4-8 7-7M34 24c0-4 3-7 6-6"/>
+    <path d="M22 42c-4 1-7-2-6-6"/></svg>`,
+  hold:`<svg viewBox="0 0 64 64">
+    <path class="eq" d="M10 40h30v12H10"/>
+    <path d="M46 14c-6 4-10 8-12 14M52 18c-6 4-10 8-12 12"/>
+    <path d="M16 30c0 6-2 10-2 14M22 30c0 6-2 10-2 14M28 30c0 6-2 10-2 14M34 30c0 5-1 9-1 12"/>
+    <path d="M14 30h21"/></svg>`,
+  extension:`<svg viewBox="0 0 64 64">
+    <rect x="18" y="38" width="26" height="16" rx="7"/>
+    <rect x="20" y="18" width="5" height="22" rx="2.5"/>
+    <rect x="27" y="14" width="5" height="26" rx="2.5"/>
+    <rect x="34" y="16" width="5" height="24" rx="2.5"/>
+    <rect x="41" y="20" width="5" height="20" rx="2.5"/>
+    <path d="M18 44c-6 0-9-4-7-9"/>
+    <path class="eq" d="M19 22c7-8 21-10 28 0"/>
+    <path class="eq" d="M12 27 8 25v5zM52 27l4-2v5z"/></svg>`,
+  stretch:`<svg viewBox="0 0 64 64">
+    <path d="M8 42h20M8 50h20"/>
+    <rect x="26" y="40" width="14" height="12" rx="5"/>
+    <path d="M40 44c8-4 10-12 6-18M40 48c9-3 13-10 10-17"/>
+    <path class="eq" d="M30 30a14 14 0 0 1 18-6"/>
+    <path class="eq" d="M30 30l1-5 4 3z"/></svg>`,
+  shake:`<svg viewBox="0 0 64 64">
+    <rect x="24" y="20" width="16" height="14" rx="6"/>
+    <path d="M26 34c-1 6-1 10 0 14M31 35c-1 6-1 11 0 15M37 35c1 6 1 10 0 14M42 33c2 5 2 9 0 13"/>
+    <path d="M24 24c-6 0-8 4-5 8"/>
+    <path class="eq" d="M14 26q4 4 0 8M50 26q-4 4 0 8"/></svg>`,
+  wrist:`<svg viewBox="0 0 64 64">
+    <path d="M26 46v12M38 46v12"/>
+    <rect x="22" y="28" width="20" height="18" rx="8"/>
+    <path d="M27 30v4M32 29v4M37 30v4"/>
+    <path class="eq" d="M16 48a16 12 0 1 1 32 0"/>
+    <path class="eq" d="M48 48l3-4-5-1z"/></svg>`,
+  wall:`<svg viewBox="0 0 64 64">
+    <rect class="eq" x="14" y="12" width="36" height="40" rx="4"/>
+    <circle class="eq" cx="22" cy="20" r="1.4"/><circle class="eq" cx="42" cy="44" r="1.4"/>
+    <path d="M26 34c-2-6 6-10 12-7 6 3 4 13-3 13-5 0-7-1-9-6Z"/></svg>`,
+};
+
+const PLANS = {
+  Monday:{ tag:"Menu A", name:"Endurance Pump", focus:"High volume, light-to-moderate load. Forearm pump without loading the finger pulleys.", color:"accent",
+    items:[
+      {t:"Warm-up: 20 light squeezes each hand",type:"reps",fig:"gripper"},
+      {t:"3 sets × 25–30 reps, light-moderate load",sub:"rest 30–45s between sets",type:"timer",sec:40,tl:"REST",fig:"gripper"},
+      {t:"Cooldown: wrist circles + shake-out",type:"timer",sec:30,tl:"SHAKE-OUT",fig:"wrist"},
+    ]},
+  Tuesday:{ tag:"Menu B", name:"Climbing Repeaters", focus:"Isometric holds — closest match to gripping on the wall. Run it per hand.", color:"accent",
+    items:[
+      {t:"Warm-up: 20 light squeezes",type:"reps",fig:"gripper"},
+      {t:"Repeaters: hold 7s / release 3s × 7 = 1 round",sub:"auto: left → swap → right",type:"repeater",hold:7,rest:3,reps:7,fig:"hold"},
+      {t:"3–4 rounds per hand",sub:"rest 60s between rounds",type:"timer",sec:60,tl:"REST",fig:"hold"},
+      {t:"Finisher: finger extension ×15 + stretch",type:"reps",fig:"extension"},
+    ]},
+  Wednesday:{ tag:"Menu C", name:"Recovery & Antagonist", focus:"Recovery day. Train the opposing muscles to keep climber's elbow away.", color:"cool",
+    items:[
+      {t:"Finger extension (band on fingertips) ×15–20, 3 sets",type:"reps",fig:"extension"},
+      {t:"Stretch flexors & extensors",sub:"20s each side",type:"timer",sec:20,tl:"STRETCH",fig:"stretch"},
+      {t:"Shake-out / light forearm massage",type:"reps",fig:"shake"},
+    ]},
+  Thursday:{ tag:"Menu A", name:"Endurance Pump", focus:"High volume, light-to-moderate load. Forearm pump without loading the finger pulleys.", color:"accent",
+    items:[
+      {t:"Warm-up: 20 light squeezes each hand",type:"reps",fig:"gripper"},
+      {t:"3 sets × 25–30 reps, light-moderate load",sub:"rest 30–45s between sets",type:"timer",sec:40,tl:"REST",fig:"gripper"},
+      {t:"Cooldown: wrist circles + shake-out",type:"timer",sec:30,tl:"SHAKE-OUT",fig:"wrist"},
+    ]},
+  Friday:{ tag:"Menu B", name:"Climbing Repeaters", focus:"Isometric holds — closest match to gripping on the wall. Run it per hand.", color:"accent",
+    items:[
+      {t:"Warm-up: 20 light squeezes",type:"reps",fig:"gripper"},
+      {t:"Repeaters: hold 7s / release 3s × 7 = 1 round",sub:"auto: left → swap → right",type:"repeater",hold:7,rest:3,reps:7,fig:"hold"},
+      {t:"3–4 rounds per hand",sub:"rest 60s between rounds",type:"timer",sec:60,tl:"REST",fig:"hold"},
+      {t:"Finisher: finger extension ×15 + stretch",type:"reps",fig:"extension"},
+    ]},
+  Saturday:{ tag:"Menu C", name:"Recovery & Antagonist", focus:"Recovery day. Train the opposing muscles to keep climber's elbow away.", color:"cool",
+    items:[
+      {t:"Finger extension (band on fingertips) ×15–20, 3 sets",type:"reps",fig:"extension"},
+      {t:"Stretch flexors & extensors",sub:"20s each side",type:"timer",sec:20,tl:"STRETCH",fig:"stretch"},
+      {t:"Shake-out / light forearm massage",type:"reps",fig:"shake"},
+    ]},
+  Sunday:{ tag:"Menu A", name:"Endurance Pump", focus:"High volume, light-to-moderate load. Forearm pump without loading the finger pulleys.", color:"accent",
+    items:[
+      {t:"Warm-up: 20 light squeezes each hand",type:"reps",fig:"gripper"},
+      {t:"3 sets × 25–30 reps, light-moderate load",sub:"rest 30–45s between sets",type:"timer",sec:40,tl:"REST",fig:"gripper"},
+      {t:"Cooldown: wrist circles + shake-out",type:"timer",sec:30,tl:"SHAKE-OUT",fig:"wrist"},
+    ]},
+};
+
+const todayName = DAYS[new Date().getDay()];
+let current = todayName;
+const doneState = {};
+const $ = id => document.getElementById(id);
+
+function renderToday(){
+  const d = new Date();
+  const mon = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];
+  $("today").textContent = `${todayName.toUpperCase()} · ${mon} ${d.getDate()}, ${d.getFullYear()}`;
+}
+function renderDays(){
+  const box = $("days"); box.innerHTML = "";
+  ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"].forEach(name=>{
+    const el = document.createElement("button");
+    el.className = "day" + (name===current?" active":"") + (name===todayName?" is-today":"");
+    el.textContent = SHORT[DAYS.indexOf(name)];
+    el.onclick = ()=>{ current=name; renderAll(); };
+    box.appendChild(el);
+  });
+}
+function colorVars(c){
+  if(c==="cool") return {col:"var(--cool)",tint:"rgba(127,180,201,.10)"};
+  return {col:"var(--accent)",tint:"rgba(255,74,28,.12)"};
+}
+function renderBanner(){
+  const p = PLANS[current]; const cv = colorVars(p.color);
+  $("banner").style.setProperty("--tint",cv.tint);
+  $("banner").style.setProperty("--menucol",cv.col);
+  $("progFill").style.setProperty("--menucol",cv.col);
+  document.documentElement.style.setProperty("--menucol",cv.col);
+  $("menuTag").textContent = p.tag; $("menuTag").style.color = cv.col;
+  $("menuName").textContent = p.name;
+  $("menuFocus").textContent = p.focus;
+  $("menuFocus").style.display = p.focus ? "block":"none";
+}
+function renderList(){
+  const p = PLANS[current];
+  const list = $("list"); list.innerHTML = "";
+  if(!doneState[current]) doneState[current] = new Set();
+  const done = doneState[current];
+
+  p.items.forEach((it,i)=>{
+    const ex = document.createElement("div");
+    ex.className = "ex" + (done.has(i)?" done":"");
+
+    const chk = document.createElement("button");
+    chk.className = "check";
+    chk.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="4 13 9 18 20 6"/></svg>';
+    chk.onclick = ()=>{ done.has(i)?done.delete(i):done.add(i); renderList(); renderProg(); };
+
+    const body = document.createElement("div");
+    body.className = "ex-body";
+    body.innerHTML = `<div class="ex-title">${it.t}</div>` + (it.sub?`<div class="ex-sub">${it.sub}</div>`:"");
+
+    if(it.type==="timer"){
+      const b = document.createElement("button"); b.className="timer-btn";
+      b.innerHTML = playIcon() + ` ${it.tl||"TIMER"} · ${it.sec}s`;
+      b.onclick = ()=> openCountdown(it.sec, it.tl||"TIMER");
+      body.appendChild(b);
+    }
+    if(it.type==="repeater"){
+      const b = document.createElement("button"); b.className="timer-btn";
+      b.innerHTML = playIcon() + ` REPEATER · ${it.hold}s/${it.rest}s ×${it.reps}`;
+      b.onclick = ()=> openRepeater(it.hold,it.rest,it.reps);
+      body.appendChild(b);
+    }
+
+    ex.appendChild(chk); ex.appendChild(body);
+
+    if(it.fig && FIGS[it.fig]){
+      const f = document.createElement("div");
+      f.className = "fig"; f.innerHTML = FIGS[it.fig];
+      ex.appendChild(f);
+    }
+    list.appendChild(ex);
+  });
+
+  if(p.rest){
+    const r = document.createElement("div"); r.className="restday";
+    r.innerHTML = '<div class="big">— LISTEN TO YOUR BODY —</div>';
+    list.appendChild(r);
+  }
+}
+function playIcon(){ return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l11-7z"/></svg>'; }
+function renderProg(){
+  const p = PLANS[current];
+  const done = doneState[current] ? doneState[current].size : 0;
+  const total = p.items.length;
+  $("progTxt").textContent = `${done} / ${total}`;
+  $("progFill").style.width = total ? (done/total*100)+"%" : "0%";
+}
+function renderAll(){ renderDays(); renderBanner(); renderList(); renderProg(); }
+
+let audioCtx=null;
+function beep(freq=660,dur=.12,type="sine",vol=.25){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended") audioCtx.resume();
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type=type; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination);
+    g.gain.setValueAtTime(vol,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+dur);
+    o.start(); o.stop(audioCtx.currentTime+dur);
+  }catch(e){}
+}
+function buzz(ms){ if(navigator.vibrate) navigator.vibrate(ms); }
+
+const RING_CIRC = 2*Math.PI*44;
+let tState=null;
+let autoCloseTO=null;
+function setRing(frac,color){
+  $("ringFg").style.strokeDasharray = RING_CIRC;
+  $("ringFg").style.strokeDashoffset = RING_CIRC*(1-frac);
+  $("ringFg").style.stroke = color;
+}
+function showOverlay(){ clearTimeout(autoCloseTO); $("overlay").classList.add("show"); }
+function hideOverlay(){ clearTimeout(autoCloseTO); $("overlay").classList.remove("show"); stopTimer(); }
+function stopTimer(){
+  if(tState && tState.raf) cancelAnimationFrame(tState.raf);
+  tState=null; $("tPause").textContent="Pause";
+}
+function openCountdown(seconds,label){
+  showOverlay();
+  if(!audioCtx){ try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){} }
+  $("tLabel").textContent=label; $("tLabel").style.color="var(--accent)";
+  $("tSub").textContent="countdown";
+  runCountdown(seconds,"var(--accent)",()=>{
+    beep(880,.18); beep(1100,.18); buzz([120,60,120]);
+    $("tLabel").textContent="DONE"; $("tCount").textContent="✓"; setRing(1,"var(--good)");
+    autoCloseTO=setTimeout(hideOverlay,800);
+  });
+}
+function runCountdown(seconds,color,onDone){
+  const total=seconds*1000; const start=performance.now();
+  let lastWhole=Math.ceil(seconds);
+  $("tCount").textContent=lastWhole; setRing(1,color);
+  tState={paused:false,offset:0,pausedAt:0};
+  function frame(now){
+    if(!tState) return;
+    if(tState.paused){ tState.raf=requestAnimationFrame(frame); return; }
+    const elapsed=now-start-tState.offset;
+    const remain=Math.max(0,total-elapsed);
+    setRing(remain/total,color);
+    const whole=Math.ceil(remain/1000);
+    if(whole!==lastWhole){ lastWhole=whole; $("tCount").textContent=whole;
+      if(whole>0 && whole<=3){ beep(520,.08); buzz(40); } }
+    if(remain<=0){ stopTimer(); onDone&&onDone(); return; }
+    tState.raf=requestAnimationFrame(frame);
+  }
+  tState.raf=requestAnimationFrame(frame);
+}
+function openRepeater(hold,rest,reps){
+  showOverlay();
+  if(!audioCtx){ try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){} }
+  const HANDS=["LEFT HAND","RIGHT HAND"];
+  let handIdx=0, rep=0;
+
+  function startHand(){ rep=0; holdPhase(); }
+  function holdPhase(){
+    rep++;
+    $("tLabel").textContent="HOLD"; $("tLabel").style.color="var(--accent)";
+    $("tSub").textContent=`${HANDS[handIdx]} · round ${rep}/${reps}`;
+    beep(880,.14); buzz(90);
+    runCountdown(hold,"var(--accent)",()=>{ if(rep>=reps){ afterHand(); } else { releasePhase(); } });
+  }
+  function releasePhase(){
+    $("tLabel").textContent="RELEASE"; $("tLabel").style.color="var(--cool)";
+    $("tSub").textContent=`${HANDS[handIdx]} · ${rep}/${reps} done`;
+    beep(360,.14); buzz(50);
+    runCountdown(rest,"var(--cool)",()=> holdPhase());
+  }
+  function afterHand(){ if(handIdx===0){ handIdx=1; swapPhase(); } else { finish(); } }
+  function swapPhase(){
+    $("tLabel").textContent="SWAP HANDS"; $("tLabel").style.color="var(--good)";
+    $("tSub").textContent="get the right hand ready";
+    beep(700,.12); beep(900,.14); buzz([90,70,90]);
+    runCountdown(8,"var(--good)",()=> startHand());
+  }
+  function finish(){
+    beep(880,.16); beep(1100,.16); beep(1320,.2); buzz([120,60,120,60,180]);
+    $("tLabel").textContent="DONE"; $("tLabel").style.color="var(--good)";
+    $("tSub").textContent="round complete · rest 60s";
+    $("tCount").textContent="✓"; setRing(1,"var(--good)");
+    autoCloseTO=setTimeout(hideOverlay,1100);
+  }
+  function readyPhase(){
+    $("tLabel").textContent="GET READY"; $("tLabel").style.color="var(--good)";
+    $("tSub").textContent="left hand first";
+    beep(500,.1); buzz(60);
+    runCountdown(5,"var(--good)",()=> startHand());
+  }
+  readyPhase();
+}
+$("tStop").onclick = hideOverlay;
+$("tPause").onclick = ()=>{
+  if(!tState) return;
+  if(!tState.paused){ tState.paused=true; tState.pausedAt=performance.now(); $("tPause").textContent="Resume"; }
+  else{ tState.offset += performance.now()-tState.pausedAt; tState.paused=false; $("tPause").textContent="Pause"; }
+};
+$("overlay").addEventListener("click",e=>{ if(e.target===$("overlay")) hideOverlay(); });
+
+renderToday(); renderAll();
+</script>
+</body>
+</html>

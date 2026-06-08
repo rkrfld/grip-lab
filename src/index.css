@@ -1,0 +1,90 @@
+@import '@fontsource/big-shoulders-display/500.css';
+@import '@fontsource/big-shoulders-display/700.css';
+@import '@fontsource/big-shoulders-display/800.css';
+@import '@fontsource/big-shoulders-display/900.css';
+@import '@fontsource/dm-mono/400.css';
+@import '@fontsource/dm-mono/500.css';
+
+:root {
+  --bg: #0e0d0b;
+  --bg2: #161410;
+  --card: #1b1813;
+  --line: #2c2820;
+  --chalk: #f3ede0;
+  --muted: #8a8273;
+  --accent: #ff4a1c;
+  --accent-dim: #7a2d18;
+  --cool: #7fb4c9;
+  --cool-dim: #2f4750;
+  --good: #9fd17a;
+  --radius: 14px;
+  --menucol: var(--accent);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  background: var(--bg);
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: 'DM Mono', monospace;
+  color: var(--chalk);
+  min-height: 100dvh;
+  background:
+    radial-gradient(120% 90% at 90% -10%, rgba(255,74,28,.12), transparent 55%),
+    radial-gradient(120% 80% at -10% 110%, rgba(127,180,201,.08), transparent 50%),
+    var(--bg);
+  overflow-x: hidden;
+  padding-bottom: max(110px, calc(80px + env(safe-area-inset-bottom)));
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+}
+
+button {
+  touch-action: manipulation;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  background: none;
+  border: none;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scalePulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}

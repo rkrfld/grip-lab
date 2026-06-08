@@ -1,0 +1,83 @@
+{
+  "days": {
+    "Monday": {
+      "tag": "Menu A",
+      "name": "Endurance Pump",
+      "focus": "High volume, light-to-moderate load. Forearm pump without loading the finger pulleys.",
+      "color": "accent",
+      "exercises": [
+        { "id": "mon-1", "title": "Warm-up: 20 light squeezes each hand", "type": "reps", "figure": "gripper" },
+        { "id": "mon-2", "title": "3 sets × 25–30 reps, light-moderate load", "subtitle": "rest 30–45s between sets", "type": "timer", "seconds": 40, "timerLabel": "REST", "figure": "gripper" },
+        { "id": "mon-3", "title": "Cooldown: wrist circles + shake-out", "type": "timer", "seconds": 30, "timerLabel": "SHAKE-OUT", "figure": "wrist" }
+      ]
+    },
+    "Tuesday": {
+      "tag": "Menu B",
+      "name": "Climbing Repeaters",
+      "focus": "Isometric holds — closest match to gripping on the wall. Run it per hand.",
+      "color": "accent",
+      "exercises": [
+        { "id": "tue-1", "title": "Warm-up: 20 light squeezes", "type": "reps", "figure": "gripper" },
+        { "id": "tue-2", "title": "Repeaters: hold 7s / release 3s × 7 = 1 round", "subtitle": "auto: left → swap → right", "type": "repeater", "hold": 7, "rest": 3, "reps": 7, "figure": "hold" },
+        { "id": "tue-3", "title": "3–4 rounds per hand", "subtitle": "rest 60s between rounds", "type": "timer", "seconds": 60, "timerLabel": "REST", "figure": "hold" },
+        { "id": "tue-4", "title": "Finisher: finger extension ×15 + stretch", "type": "reps", "figure": "extension" }
+      ]
+    },
+    "Wednesday": {
+      "tag": "Menu C",
+      "name": "Recovery & Antagonist",
+      "focus": "Recovery day. Train the opposing muscles to keep climber's elbow away.",
+      "color": "cool",
+      "exercises": [
+        { "id": "wed-1", "title": "Finger extension (band on fingertips) ×15–20, 3 sets", "type": "reps", "figure": "extension" },
+        { "id": "wed-2", "title": "Stretch flexors & extensors", "subtitle": "20s each side", "type": "timer", "seconds": 20, "timerLabel": "STRETCH", "figure": "stretch" },
+        { "id": "wed-3", "title": "Shake-out / light forearm massage", "type": "reps", "figure": "shake" }
+      ]
+    },
+    "Thursday": {
+      "tag": "Menu A",
+      "name": "Endurance Pump",
+      "focus": "High volume, light-to-moderate load. Forearm pump without loading the finger pulleys.",
+      "color": "accent",
+      "exercises": [
+        { "id": "thu-1", "title": "Warm-up: 20 light squeezes each hand", "type": "reps", "figure": "gripper" },
+        { "id": "thu-2", "title": "3 sets × 25–30 reps, light-moderate load", "subtitle": "rest 30–45s between sets", "type": "timer", "seconds": 40, "timerLabel": "REST", "figure": "gripper" },
+        { "id": "thu-3", "title": "Cooldown: wrist circles + shake-out", "type": "timer", "seconds": 30, "timerLabel": "SHAKE-OUT", "figure": "wrist" }
+      ]
+    },
+    "Friday": {
+      "tag": "Menu B",
+      "name": "Climbing Repeaters",
+      "focus": "Isometric holds — closest match to gripping on the wall. Run it per hand.",
+      "color": "accent",
+      "exercises": [
+        { "id": "fri-1", "title": "Warm-up: 20 light squeezes", "type": "reps", "figure": "gripper" },
+        { "id": "fri-2", "title": "Repeaters: hold 7s / release 3s × 7 = 1 round", "subtitle": "auto: left → swap → right", "type": "repeater", "hold": 7, "rest": 3, "reps": 7, "figure": "hold" },
+        { "id": "fri-3", "title": "3–4 rounds per hand", "subtitle": "rest 60s between rounds", "type": "timer", "seconds": 60, "timerLabel": "REST", "figure": "hold" },
+        { "id": "fri-4", "title": "Finisher: finger extension ×15 + stretch", "type": "reps", "figure": "extension" }
+      ]
+    },
+    "Saturday": {
+      "tag": "Menu C",
+      "name": "Recovery & Antagonist",
+      "focus": "Recovery day. Train the opposing muscles to keep climber's elbow away.",
+      "color": "cool",
+      "exercises": [
+        { "id": "sat-1", "title": "Finger extension (band on fingertips) ×15–20, 3 sets", "type": "reps", "figure": "extension" },
+        { "id": "sat-2", "title": "Stretch flexors & extensors", "subtitle": "20s each side", "type": "timer", "seconds": 20, "timerLabel": "STRETCH", "figure": "stretch" },
+        { "id": "sat-3", "title": "Shake-out / light forearm massage", "type": "reps", "figure": "shake" }
+      ]
+    },
+    "Sunday": {
+      "tag": "Menu A",
+      "name": "Endurance Pump",
+      "focus": "High volume, light-to-moderate load. Forearm pump without loading the finger pulleys.",
+      "color": "accent",
+      "exercises": [
+        { "id": "sun-1", "title": "Warm-up: 20 light squeezes each hand", "type": "reps", "figure": "gripper" },
+        { "id": "sun-2", "title": "3 sets × 25–30 reps, light-moderate load", "subtitle": "rest 30–45s between sets", "type": "timer", "seconds": 40, "timerLabel": "REST", "figure": "gripper" },
+        { "id": "sun-3", "title": "Cooldown: wrist circles + shake-out", "type": "timer", "seconds": 30, "timerLabel": "SHAKE-OUT", "figure": "wrist" }
+      ]
+    }
+  }
+}
