@@ -59,8 +59,14 @@ export default function App() {
 
   return (
     <>
-      <div style={{ '--menucol': menuColor } as React.CSSProperties}>
-        <div className="max-w-[460px] mx-auto px-[18px]">
+      <div style={{ '--menucol': menuColor } as React.CSSProperties} className="min-h-[100dvh] flex flex-col items-center">
+        <div
+          className="w-full max-w-[460px]"
+          style={{
+            paddingLeft:  'max(18px, calc(18px + var(--sal)))',
+            paddingRight: 'max(18px, calc(18px + var(--sar)))',
+          }}
+        >
 
           <header className="pt-[26px] pb-[14px]">
             <div className="flex items-center gap-2 text-[11px] tracking-[0.28em] uppercase text-muted">

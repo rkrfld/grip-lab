@@ -38,7 +38,13 @@ export function TimerOverlay({ config, settings, onClose }: Props) {
   return (
     <div
       onClick={e => { if (e.target === e.currentTarget) handleClose() }}
-      className="fixed inset-0 z-50 bg-[rgba(8,7,6,0.88)] backdrop-blur-[10px] flex flex-col items-center justify-center p-6 pb-[max(24px,calc(24px+env(safe-area-inset-bottom)))] animate-slide-up"
+      className="fixed inset-0 z-50 bg-[rgba(8,7,6,0.88)] backdrop-blur-[10px] flex flex-col items-center justify-center animate-slide-up"
+      style={{
+        paddingTop:    'max(24px, calc(24px + var(--sat)))',
+        paddingBottom: 'max(24px, calc(24px + var(--sab)))',
+        paddingLeft:   'max(24px, calc(24px + var(--sal)))',
+        paddingRight:  'max(24px, calc(24px + var(--sar)))',
+      }}
     >
       <div
         className="font-display font-extrabold text-[clamp(34px,12vw,56px)] uppercase tracking-[0.02em] leading-[0.9] text-center transition-colors duration-200"

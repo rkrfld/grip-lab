@@ -20,7 +20,13 @@ export function SettingsToggle({ soundEnabled, hapticEnabled, onToggleSound, onT
         />
       )}
 
-      <div className="fixed bottom-[max(24px,calc(20px+env(safe-area-inset-bottom)))] right-5 z-40 flex flex-col items-end gap-2.5">
+      <div
+        className="fixed z-40 flex flex-col items-end gap-2.5"
+        style={{
+          bottom: 'max(24px, calc(20px + var(--sab)))',
+          right:  'max(20px, calc(20px + var(--sar)))',
+        }}
+      >
         {open && (
           <div className="bg-card border border-line rounded-[14px] py-1 min-w-[180px] animate-slide-up">
             <ToggleRow

@@ -36,6 +36,12 @@
     --accent:  #ff4a1c;
     --cool:    #7fb4c9;
     --good:    #9fd17a;
+
+    /* Safe area aliases with 0px fallback for non-iOS */
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
   }
 
   *, *::before, *::after {
@@ -56,7 +62,10 @@
       radial-gradient(120% 80% at -10% 110%, rgba(127,180,201,.08), transparent 50%),
       #0e0d0b;
     overflow-x: hidden;
-    padding-bottom: max(110px, calc(80px + env(safe-area-inset-bottom)));
+    /* top: push content below notch / Dynamic Island */
+    padding-top: var(--sat);
+    /* bottom: clear home indicator + extra breathing room */
+    padding-bottom: max(110px, calc(80px + var(--sab)));
   }
 
   body::before {
