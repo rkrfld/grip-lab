@@ -6,6 +6,7 @@ import { ExerciseList } from './components/ExerciseList'
 import { TimerOverlay } from './components/TimerOverlay'
 import { SettingsToggle } from './components/SettingsToggle'
 import { SplashScreen } from './components/SplashScreen'
+import { LandscapeHint } from './components/LandscapeHint'
 import { useSettings } from './hooks/useSettings'
 import type { TimerConfig } from './hooks/useTimer'
 import type { Exercise } from './components/ExerciseCard'
@@ -37,6 +38,7 @@ export default function App() {
   const hideSplash = useCallback(() => setSplash(false), [])
 
   const [selectedDay, setSelectedDay] = useState<DayName>(today)
+  const [slideDir, setSlideDir] = useState<'left' | 'right'>('left')
   const [doneMap, setDoneMap] = useState<Record<string, Set<string>>>({})
   const [timerConfig, setTimerConfig] = useState<TimerConfig | null>(null)
   const settings = useSettings()
@@ -49,6 +51,7 @@ export default function App() {
   const menuColor = plan.color === 'cool' ? 'var(--cool)' : 'var(--accent)'
 
   function toggleDone(id: string) {
+    if (settings.hapticEnabled) navigator.vibrate?.(30)
     setDoneMap(prev => {
       const current = new Set(prev[selectedDay] ?? [])
       current.has(id) ? current.delete(id) : current.add(id)
@@ -57,6 +60,9 @@ export default function App() {
   }
 
   function handleDaySelect(day: string) {
+    const prevIdx = DAYS_ORDER.indexOf(selectedDay)
+    const nextIdx = DAYS_ORDER.indexOf(day as DayName)
+    setSlideDir(nextIdx >= prevIdx ? 'left' : 'right')
     setSelectedDay(day as DayName)
     setTimerConfig(null)
   }
@@ -64,6 +70,7 @@ export default function App() {
   return (
     <>
       {splash && <SplashScreen onDone={hideSplash} />}
+      <LandscapeHint />
       <div style={{ '--menucol': menuColor } as React.CSSProperties} className="min-h-[100dvh] flex flex-col items-center">
         <div
           className="w-full max-w-[460px]"
@@ -116,6 +123,7 @@ export default function App() {
             exercises={plan.exercises}
             doneSet={doneSet}
             animKey={selectedDay}
+            slideDir={slideDir}
             onToggle={toggleDone}
             onOpenTimer={setTimerConfig}
           />

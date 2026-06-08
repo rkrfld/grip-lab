@@ -5,13 +5,17 @@ interface Props {
   exercises: Exercise[]
   doneSet: Set<string>
   animKey: string
+  slideDir: 'left' | 'right'
   onToggle: (id: string) => void
   onOpenTimer: (config: TimerConfig) => void
 }
 
-export function ExerciseList({ exercises, doneSet, animKey, onToggle, onOpenTimer }: Props) {
+export function ExerciseList({ exercises, doneSet, animKey, slideDir, onToggle, onOpenTimer }: Props) {
   return (
-    <div key={animKey} className="animate-fade-in">
+    <div
+      key={animKey}
+      className={slideDir === 'left' ? 'animate-slide-from-right' : 'animate-slide-from-left'}
+    >
       {exercises.map(ex => (
         <ExerciseCard
           key={ex.id}

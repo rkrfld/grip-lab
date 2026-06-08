@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useTimer, type TimerConfig } from '../hooks/useTimer'
+import { useWakeLock } from '../hooks/useWakeLock'
 
 interface Settings {
   soundEnabled: boolean
@@ -16,6 +17,7 @@ const RING_CIRC = 2 * Math.PI * 44
 
 export function TimerOverlay({ config, settings, onClose }: Props) {
   const { state, togglePause, stop } = useTimer(config, settings, onClose)
+  useWakeLock(!!config && state.isActive)
 
   useEffect(() => {
     if (config) document.body.style.overflow = 'hidden'
