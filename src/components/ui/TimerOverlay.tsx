@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useTimer } from '../../hooks/useTimer'
 import { useWakeLock } from '../../hooks/useWakeLock'
 import type { AccentKey } from './types'
-import { ACCENT_HEX } from './types'
 
 export interface CountdownTimerConfig { seconds: number; label: string }
 export interface RepeaterTimerConfig { hold: number; rest: number; reps: number }
@@ -20,7 +19,7 @@ const RING_CIRC = 2 * Math.PI * 44
 
 export function TimerOverlay({
   open, onClose, mode, config,
-  accent = 'griplab',
+  accent: _accent = 'griplab',
   settings = { soundEnabled: true, hapticEnabled: true },
 }: TimerOverlayProps) {
   const timerConfig = open
