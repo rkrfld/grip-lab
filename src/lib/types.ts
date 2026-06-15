@@ -42,6 +42,7 @@ export interface SyncItem {
   id: string
   table: string
   operation: 'insert' | 'update' | 'delete'
-  payload: Record<string, unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  payload: Record<string, any>
   timestamp: string
 }

@@ -157,11 +157,11 @@ export const sessionLog = {
     if (!session) return { data: null, error: 'Failed to create session', source: 'offline' }
 
     const newAttempt: Attempt = {
+      ...attempt,
       id: crypto.randomUUID(),
       session_id: session.id,
       user_id: userId,
       logged_at: new Date().toISOString(),
-      ...attempt,
     }
 
     const cached = readCache<TodayCache>(CACHE.sessionToday) ?? { session, attempts: [] }
