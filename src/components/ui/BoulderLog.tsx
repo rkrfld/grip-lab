@@ -16,6 +16,7 @@ interface BoulderLogProps {
   entries: LogEntry[]
   onLog: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void
   onDelete: (id: string) => void
+  sentGrades?: string[]
   accent?: AccentKey
 }
 
@@ -27,6 +28,7 @@ export function BoulderLog({
   entries,
   onLog,
   onDelete,
+  sentGrades = [],
   accent = 'griplab',
 }: BoulderLogProps) {
   const [grade, setGrade] = useState(grades[0])
@@ -48,7 +50,9 @@ export function BoulderLog({
             style={
               g === grade
                 ? { background: color, color: '#0e0d0b' }
-                : { background: '#161410', border: '1px solid #2c2820', color: '#8a8273' }
+                : sentGrades.includes(g)
+                  ? { background: '#9fd17a18', border: '1px solid #9fd17a44', color: '#9fd17a' }
+                  : { background: '#161410', border: '1px solid #2c2820', color: '#8a8273' }
             }
           >
             {g}
