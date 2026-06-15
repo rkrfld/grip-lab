@@ -19,6 +19,28 @@
   --color-cool-dim:   #2f4750;
   --color-good:       #9fd17a;
 
+  /* Brand semantic aliases */
+  --color-brand-bg:       #0e0d0b;
+  --color-brand-bg2:      #161410;
+  --color-brand-card:     #1b1813;
+  --color-brand-line:     #2c2820;
+  --color-brand-chalk:    #f3ede0;
+  --color-brand-muted:    #8a8273;
+  --color-brand-good:     #9fd17a;
+  --color-brand-cool:     #7fb4c9;
+
+  /* Accent palette */
+  --color-accent-griplab:  #ff4a1c;
+  --color-accent-warmup:   #f59e0b;
+  --color-accent-session:  #a3e635;
+  --color-accent-cooldown: #7fb4c9;
+  --color-accent-insights: #8a8273;
+
+  /* Border radius tokens */
+  --radius-card:  14px;
+  --radius-pill:  99px;
+  --radius-check: 8px;
+
   --font-display: 'Big Shoulders Display', sans-serif;
   --font-mono:    'DM Mono', monospace;
 

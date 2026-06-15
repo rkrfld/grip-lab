@@ -53,8 +53,14 @@ export function AuthScreen() {
 
   return (
     <div
-      className="fixed inset-0 flex flex-col items-center justify-center px-6"
-      style={{ background: '#0e0d0b' }}
+      className="fixed inset-0 flex flex-col items-center justify-center"
+      style={{
+        background: '#0e0d0b',
+        paddingTop:    'max(24px, calc(24px + var(--sat)))',
+        paddingBottom: 'max(24px, calc(24px + var(--sab)))',
+        paddingLeft:   'max(24px, calc(24px + var(--sal)))',
+        paddingRight:  'max(24px, calc(24px + var(--sar)))',
+      }}
     >
       <div className="w-full max-w-[360px]">
         <div className="flex items-center gap-2 text-[11px] tracking-[0.28em] uppercase mb-3" style={{ color: '#8a8273' }}>
@@ -63,7 +69,7 @@ export function AuthScreen() {
         </div>
 
         <h1 className="font-display font-black text-[clamp(48px,17vw,72px)] leading-[0.84] tracking-[-0.01em] uppercase mb-10">
-          <span style={{ color: '#f3ede0' }}>HAND</span>
+          <span style={{ color: '#f3ede0' }}>GRIP</span>
           <br />
           <span style={{ color: '#ff4a1c' }}>LAB</span>
         </h1>
