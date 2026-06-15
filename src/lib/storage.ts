@@ -477,7 +477,10 @@ export const gymStorage = {
 
     const { data, error } = await supabase
       .from('gyms')
-      .upsert({ user_id: userId, directory_id: dirEntry.id, is_home: gym.is_home ?? false })
+      .upsert(
+        { user_id: userId, directory_id: dirEntry.id, is_home: gym.is_home ?? false },
+        { onConflict: 'user_id,directory_id' },
+      )
       .select('*, gym_directory!directory_id(name, slug, grading_system)')
       .single()
 

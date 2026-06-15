@@ -120,6 +120,7 @@ export function Session() {
           />
         ) : (
           <BoulderLog
+            key={activeGym?.id ?? 'default'}
             grades={grades}
             entries={entries}
             onLog={handleLog}

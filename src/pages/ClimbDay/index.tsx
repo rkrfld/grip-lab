@@ -43,8 +43,8 @@ export function ClimbDay() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    gymStorage.getAll().then(({ data }) => {
-      if (data !== null && data.length === 0) {
+    gymStorage.getAll().then(({ data, source }) => {
+      if (source !== 'cache' && data !== null && data.length === 0) {
         navigate('/onboarding', { replace: true })
       }
     })
