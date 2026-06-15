@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTimer } from '../../hooks/useTimer'
 import { useWakeLock } from '../../hooks/useWakeLock'
 import type { AccentKey } from './types'
@@ -22,11 +22,15 @@ export function TimerOverlay({
   accent: _accent = 'griplab',
   settings = { soundEnabled: true, hapticEnabled: true },
 }: TimerOverlayProps) {
-  const timerConfig = open
-    ? mode === 'countdown'
-      ? { type: 'countdown' as const, ...(config as CountdownTimerConfig) }
-      : { type: 'repeater' as const, ...(config as RepeaterTimerConfig) }
-    : null
+  const c = config as CountdownTimerConfig
+  const r = config as RepeaterTimerConfig
+  const timerConfig = useMemo(() => {
+    if (!open) return null
+    return mode === 'countdown'
+      ? { type: 'countdown' as const, seconds: c.seconds, label: c.label }
+      : { type: 'repeater' as const, hold: r.hold, rest: r.rest, reps: r.reps }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, mode, c.seconds, c.label, r.hold, r.rest, r.reps])
 
   const { state, togglePause, stop } = useTimer(timerConfig, settings, onClose)
   useWakeLock(open && state.isActive)
