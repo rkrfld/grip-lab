@@ -20,18 +20,18 @@ export function GradeBarChart({ data, highlightGrade, accent = 'griplab' }: Grad
   }
 
   return (
-    <div className="flex items-end gap-2 h-[120px]">
+    <div className="flex items-end gap-2">
       {data.map(bar => {
         const pct = (bar.count / max) * 100
         const isHighlight = bar.grade === highlightGrade
         return (
           <div key={bar.grade} className="flex-1 flex flex-col items-center gap-1">
-            {bar.count > 0 && (
-              <span className="text-[10px] text-muted">{bar.count}</span>
-            )}
-            <div className="w-full flex-1 flex items-end">
+            <span className="text-[10px] text-muted h-[14px] leading-none">
+              {bar.count > 0 ? bar.count : ''}
+            </span>
+            <div className="w-full relative" style={{ height: 80 }}>
               <div
-                className="w-full rounded-t-[4px] transition-all duration-300"
+                className="absolute bottom-0 w-full rounded-t-[4px] transition-all duration-300"
                 style={{
                   height: `${Math.max(pct, 4)}%`,
                   background: isHighlight ? color : `${color}55`,

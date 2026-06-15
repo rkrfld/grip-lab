@@ -49,6 +49,16 @@ export function Session() {
     setAttempts(prev => prev.filter(a => a.id !== id))
   }
 
+  async function handleEndSession() {
+    const { data } = await sessionLog.endSession()
+    if (data) {
+      navigate('/climb-day/session/recap', {
+        replace: true,
+        state: { session: data.session, attempts: data.attempts },
+      })
+    }
+  }
+
   const sends    = attempts.filter(a => a.result === 'send').length
   const falls    = attempts.filter(a => a.result === 'fall').length
   const projects = attempts.filter(a => a.result === 'project').length
@@ -133,20 +143,28 @@ export function Session() {
 
       {total > 0 && (
         <div
-          className="fixed bottom-0 inset-x-0 z-40 flex justify-around text-center border-t border-line bg-card"
+          className="fixed bottom-0 inset-x-0 z-40 flex items-center border-t border-line bg-card px-3 gap-2"
           style={{ paddingBottom: 'max(12px, calc(12px + var(--sab)))', paddingTop: '10px' }}
         >
-          {[
-            { label: 'Sends',    value: sends,    color: '#9fd17a' },
-            { label: 'Falls',    value: falls,    color: '#ff4a1c' },
-            { label: 'Projects', value: projects, color: '#f59e0b' },
-            { label: 'Total',    value: total,    color: '#f3ede0' },
-          ].map(({ label, value, color }) => (
-            <div key={label}>
-              <div className="font-display font-black text-[22px]" style={{ color }}>{value}</div>
-              <div className="text-[9px] tracking-[0.12em] uppercase text-muted">{label}</div>
-            </div>
-          ))}
+          <div className="flex justify-around text-center flex-1 min-w-0">
+            {[
+              { label: 'Sends',    value: sends,    color: '#9fd17a' },
+              { label: 'Falls',    value: falls,    color: '#ff4a1c' },
+              { label: 'Projects', value: projects, color: '#f59e0b' },
+              { label: 'Total',    value: total,    color: '#f3ede0' },
+            ].map(({ label, value, color }) => (
+              <div key={label}>
+                <div className="font-display font-black text-[22px]" style={{ color }}>{value}</div>
+                <div className="text-[9px] tracking-[0.12em] uppercase text-muted">{label}</div>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={handleEndSession}
+            className="shrink-0 rounded-full px-4 py-2.5 text-[11px] tracking-[0.08em] uppercase font-semibold bg-chalk text-black active:scale-95 transition-transform"
+          >
+            End
+          </button>
         </div>
       )}
     </>

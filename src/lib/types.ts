@@ -20,6 +20,7 @@ export interface Session {
   duration_minutes: number | null
   gym_name: string | null
   gym_id?: string | null
+  ended_at?: string | null
   created_at: string
   attempts?: Attempt[]
 }

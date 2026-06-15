@@ -51,6 +51,9 @@ async function fetchTodayFromRemote(): Promise<StorageResult<Attempt[]>> {
     .select('*, attempts(*)')
     .eq('user_id', userId)
     .eq('session_date', todayStr())
+    .is('ended_at', null)
+    .order('created_at', { ascending: false })
+    .limit(1)
 
   if (error) return { data: null, error: error.message, source: 'remote' }
 
@@ -86,7 +89,7 @@ async function fetchAllFromRemote(): Promise<StorageResult<Session[]>> {
 async function ensureTodaySession(userId: string): Promise<Session | null> {
   const date = todayStr()
   const cached = readCache<TodayCache>(CACHE.sessionToday)
-  if (cached?.session.session_date === date) return cached.session
+  if (cached?.session.session_date === date && !cached.session.ended_at) return cached.session
 
   if (navigator.onLine) {
     const { data } = await supabase
@@ -94,7 +97,10 @@ async function ensureTodaySession(userId: string): Promise<Session | null> {
       .select('*')
       .eq('user_id', userId)
       .eq('session_date', date)
-      .single()
+      .is('ended_at', null)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
 
     if (data) {
       writeCache(CACHE.sessionToday, { session: data, attempts: cached?.attempts ?? [] })
@@ -111,6 +117,7 @@ async function ensureTodaySession(userId: string): Promise<Session | null> {
     }
     const { error: insertError } = await supabase.from('sessions').insert(newSession)
     if (insertError) {
+      console.error('[storage] sessions insert failed:', insertError)
       syncQueue.add({ table: 'sessions', operation: 'insert', payload: newSession, timestamp: new Date().toISOString() })
     }
     writeCache(CACHE.sessionToday, { session: newSession, attempts: [] })
@@ -172,6 +179,7 @@ export const sessionLog = {
     if (navigator.onLine) {
       const { error } = await supabase.from('attempts').insert(newAttempt)
       if (error) {
+        console.error('[storage] attempts insert failed:', error)
         syncQueue.add({ table: 'attempts', operation: 'insert', payload: newAttempt, timestamp: new Date().toISOString() })
       }
     } else {
@@ -199,29 +207,39 @@ export const sessionLog = {
     return { data: undefined, error: null, source: navigator.onLine ? 'remote' : 'offline' }
   },
 
-  async endSession(durationMinutes: number): Promise<StorageResult<Session>> {
+  async endSession(): Promise<StorageResult<{ session: Session; attempts: Attempt[] }>> {
     const userId = await currentUserId()
     if (!userId) return { data: null, error: 'Not authenticated', source: 'offline' }
 
     const cached = readCache<TodayCache>(CACHE.sessionToday)
     if (!cached) return { data: null, error: 'No active session', source: 'offline' }
 
-    const updated: Session = { ...cached.session, duration_minutes: durationMinutes }
-    writeCache(CACHE.sessionToday, { ...cached, session: updated })
+    const endedAt = new Date().toISOString()
+    const startedAt = new Date(cached.session.created_at).getTime()
+    const durationMinutes = Math.max(1, Math.round((Date.now() - startedAt) / 60000))
+    const update = { duration_minutes: durationMinutes, ended_at: endedAt }
+    const updated: Session = { ...cached.session, ...update }
+
+    writeCache(CACHE.sessionToday, null)
 
     if (navigator.onLine) {
       const { error } = await supabase
         .from('sessions')
-        .update({ duration_minutes: durationMinutes })
+        .update(update)
         .eq('id', updated.id)
       if (error) {
-        syncQueue.add({ table: 'sessions', operation: 'update', payload: { id: updated.id, duration_minutes: durationMinutes }, timestamp: new Date().toISOString() })
+        console.error('[storage] endSession update failed:', error)
+        syncQueue.add({ table: 'sessions', operation: 'update', payload: { id: updated.id, ...update }, timestamp: new Date().toISOString() })
       }
     } else {
-      syncQueue.add({ table: 'sessions', operation: 'update', payload: { id: updated.id, duration_minutes: durationMinutes }, timestamp: new Date().toISOString() })
+      syncQueue.add({ table: 'sessions', operation: 'update', payload: { id: updated.id, ...update }, timestamp: new Date().toISOString() })
     }
 
-    return { data: updated, error: null, source: navigator.onLine ? 'remote' : 'offline' }
+    return {
+      data: { session: updated, attempts: cached.attempts },
+      error: null,
+      source: navigator.onLine ? 'remote' : 'offline',
+    }
   },
 }
 

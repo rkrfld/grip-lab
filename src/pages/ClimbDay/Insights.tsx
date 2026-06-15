@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell, BrandHeader, GradeBarChart, StreakDots } from '../../components/ui'
 import { RecapExport } from '../../components/climbday/RecapExport'
-import { sessionLog, streakData } from '../../lib/storage'
+import { sessionLog, streakData, userProfile, gymStorage } from '../../lib/storage'
 import { toVLabel } from '../../lib/gradeConversion'
-import type { Session, Attempt } from '../../lib/types'
+import type { Session, Attempt, Profile, UserGym } from '../../lib/types'
 
 function getDayStrings(count: number): string[] {
   const days: string[] = []
@@ -21,18 +21,26 @@ export function Insights() {
   const navigate = useNavigate()
   const [sessions, setSessions] = useState<Session[]>([])
   const [streak, setStreak] = useState<Record<string, boolean>>({})
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [gyms, setGyms] = useState<UserGym[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
       sessionLog.getAll(),
       streakData.get(),
-    ]).then(([sessionsResult, streakResult]) => {
+      userProfile.get(),
+      gymStorage.getAll(),
+    ]).then(([sessionsResult, streakResult, profileResult, gymsResult]) => {
       setSessions(sessionsResult.data ?? [])
       setStreak(streakResult.data ?? {})
+      setProfile(profileResult.data ?? null)
+      setGyms(gymsResult.data ?? [])
       setLoading(false)
     })
   }, [])
+
+  const handle = profile?.handle ?? profile?.display_name ?? profile?.username ?? 'climber'
 
   const allAttempts: Attempt[] = sessions.flatMap(s => s.attempts ?? [])
   const sends = allAttempts.filter(a => a.result === 'send')
@@ -134,17 +142,17 @@ export function Insights() {
             <div className="font-display font-black text-[24px]" style={{ color: '#a3e635' }}>
               {maxSendV >= 0 ? toVLabel(maxSendV) : '—'}
             </div>
-            <div className="text-[10px] tracking-[0.1em] uppercase text-muted mt-1">Best send</div>
+            <div className="text-[10px] tracking-[0.1em] uppercase text-muted mt-1">Best Send</div>
           </div>
           <div className="text-center">
             <div className="font-display font-black text-[24px] text-chalk">
               {maxAttempted >= 0 ? toVLabel(maxAttempted) : '—'}
             </div>
-            <div className="text-[10px] tracking-[0.1em] uppercase text-muted mt-1">Highest tried</div>
+            <div className="text-[10px] tracking-[0.1em] uppercase text-muted mt-1">Attempted</div>
           </div>
           <div className="text-center">
             <div className="font-display font-black text-[24px] text-chalk">{mostAttempts}</div>
-            <div className="text-[10px] tracking-[0.1em] uppercase text-muted mt-1">Most in session</div>
+            <div className="text-[10px] tracking-[0.1em] uppercase text-muted mt-1">Most Attempts</div>
           </div>
         </div>
       </div>
@@ -154,18 +162,31 @@ export function Insights() {
         <div className="flex flex-col gap-2">
           {recentSessions.map(s => {
             const att = s.attempts ?? []
-            const s_count = att.filter(a => a.result === 'send').length
-            const f_count = att.filter(a => a.result === 'fall').length
-            const p_count = att.filter(a => a.result === 'project').length
+            const dateLabel = (() => {
+              const [, m, d] = s.session_date.split('-')
+              const mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m) - 1]
+              return `${mon} ${parseInt(d)}`
+            })()
             return (
               <div key={s.id} className="flex items-center gap-3">
-                <div className="text-[12px] text-muted w-[90px]">{s.session_date}</div>
-                <div className="flex gap-2 text-[11px]">
-                  <span style={{ color: '#9fd17a' }}>{s_count}S</span>
-                  <span style={{ color: '#ff4a1c' }}>{f_count}F</span>
-                  <span style={{ color: '#f59e0b' }}>{p_count}P</span>
+                <div className="text-[12px] text-muted w-[44px] shrink-0">{dateLabel}</div>
+                <div className="flex flex-wrap gap-[3px] flex-1 min-w-0">
+                  {att.map((a, i) => {
+                    const bg = a.result === 'send' ? '#9fd17a22' : a.result === 'fall' ? '#ff4a1c22' : '#f59e0b22'
+                    const fg = a.result === 'send' ? '#9fd17a' : a.result === 'fall' ? '#ff4a1c' : '#f59e0b'
+                    const letter = a.result === 'send' ? 'S' : a.result === 'fall' ? 'F' : 'P'
+                    return (
+                      <span
+                        key={i}
+                        className="inline-flex items-center justify-center w-[18px] h-[18px] rounded-[4px] text-[9px] font-bold leading-none"
+                        style={{ background: bg, color: fg }}
+                      >
+                        {letter}
+                      </span>
+                    )
+                  })}
                 </div>
-                <div className="text-[11px] text-muted ml-auto">{att.length} total</div>
+                <div className="text-[11px] text-muted shrink-0">{att.length}</div>
               </div>
             )
           })}
@@ -173,7 +194,12 @@ export function Insights() {
       </div>
 
       <div className="mt-3 mb-6">
-        <RecapExport />
+        <RecapExport
+          sessions={sessions}
+          gyms={gyms}
+          handle={handle}
+          onGoToSession={() => navigate('/climb-day/session')}
+        />
       </div>
     </AppShell>
   )
