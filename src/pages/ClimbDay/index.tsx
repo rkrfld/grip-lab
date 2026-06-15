@@ -4,6 +4,7 @@ import { AppShell, BrandHeader, HomeCard } from '../../components/ui'
 import type { AccentKey } from '../../components/ui'
 import { ACCENT_HEX } from '../../components/ui'
 import { gymStorage } from '../../lib/storage'
+import { useAuth } from '../../hooks/useAuth'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
@@ -41,6 +42,7 @@ function ModeCard({ icon, name, sub, accent, onClick }: ModeCardProps) {
 
 export function ClimbDay() {
   const navigate = useNavigate()
+  const { signOut } = useAuth()
 
   useEffect(() => {
     gymStorage.getAll().then(({ data, source }) => {
@@ -82,6 +84,15 @@ export function ClimbDay() {
         <p className="text-[12px] text-muted leading-[1.5]">
           💡 Shoulder CARs before any overhead move. Your shoulder clicks — warm it up fully.
         </p>
+      </div>
+
+      <div className="mt-6 mb-2 flex justify-center">
+        <button
+          onClick={() => signOut()}
+          className="text-[11px] tracking-[0.1em] uppercase text-muted hover:text-chalk transition-colors"
+        >
+          Sign out
+        </button>
       </div>
     </AppShell>
   )
