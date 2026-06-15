@@ -28,8 +28,13 @@ export function AuthGuard({ children }: AuthGuardProps) {
     <>
       {!isOnline && (
         <div
-          className="fixed top-0 inset-x-0 z-50 py-1.5 text-center text-[11px] tracking-[0.08em] uppercase"
-          style={{ background: '#2c2820', color: '#8a8273' }}
+          className="fixed top-0 inset-x-0 z-50 text-center text-[11px] tracking-[0.08em] uppercase"
+          style={{
+            background: '#2c2820',
+            color: '#8a8273',
+            paddingTop: 'calc(var(--sat) + 6px)',
+            paddingBottom: '6px',
+          }}
         >
           Offline — data will sync when connected
         </div>
