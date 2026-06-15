@@ -5,4 +5,4 @@ dist-ssr
 .DS_Store
 .vercel
 .env*
-./docs*
+docs/

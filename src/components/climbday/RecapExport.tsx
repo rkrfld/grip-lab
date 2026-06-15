@@ -27,7 +27,8 @@ export function RecapExport({ sessions, gyms, handle, onGoToSession }: RecapExpo
   const [selectedId, setSelectedId] = useState<string | null>(recent[0]?.id ?? null)
   const [variant, setVariant] = useState<Variant>('compact')
   const [busy, setBusy] = useState(false)
-  const [showIOSHint, setShowIOSHint] = useState(false)
+  const [exportedUrl, setExportedUrl] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const captureRef = useRef<HTMLDivElement>(null)
 
   const selectedSession = recent.find(s => s.id === selectedId) ?? recent[0] ?? null
@@ -57,6 +58,11 @@ export function RecapExport({ sessions, gyms, handle, onGoToSession }: RecapExpo
   async function handleDownload() {
     if (!captureRef.current || busy) return
     setBusy(true)
+    setErrorMsg(null)
+    if (exportedUrl) {
+      URL.revokeObjectURL(exportedUrl)
+      setExportedUrl(null)
+    }
     try {
       if (document.fonts?.ready) await document.fonts.ready
       const w = 480
@@ -71,23 +77,44 @@ export function RecapExport({ sessions, gyms, handle, onGoToSession }: RecapExpo
         windowWidth: w,
         windowHeight: h,
       })
-      const dataUrl = canvas.toDataURL('image/png')
+
+      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'))
+      if (!blob) {
+        setErrorMsg('Could not render image.')
+        return
+      }
+
       const safeDate = data!.date.replace(/\s/g, '-')
       const filename = `griplab-${safeDate}-${variant}.png`
 
-      if (isIOS) {
-        const w = window.open()
-        if (w) {
-          w.document.write(`<img src="${dataUrl}" alt="${filename}" style="max-width:100%;display:block;margin:0 auto" />`)
-          w.document.title = filename
+      if (isIOS && typeof navigator.canShare === 'function') {
+        try {
+          const file = new File([blob], filename, { type: 'image/png' })
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: 'Grip Lab session' })
+            return
+          }
+        } catch (e: unknown) {
+          const name = e instanceof Error ? e.name : ''
+          if (name === 'AbortError') return
         }
-        setShowIOSHint(true)
-      } else {
-        const link = document.createElement('a')
-        link.download = filename
-        link.href = dataUrl
-        link.click()
       }
+
+      const url = URL.createObjectURL(blob)
+
+      if (isIOS) {
+        setExportedUrl(url)
+        return
+      }
+
+      const link = document.createElement('a')
+      link.download = filename
+      link.href = url
+      link.click()
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Unknown error'
+      setErrorMsg(`Export failed: ${msg}`)
     } finally {
       setBusy(false)
     }
@@ -184,10 +211,24 @@ export function RecapExport({ sessions, gyms, handle, onGoToSession }: RecapExpo
         {busy ? 'Rendering…' : '↓ Download PNG'}
       </button>
 
-      {showIOSHint && (
-        <p className="text-[11px] text-muted mt-3 leading-[1.5] text-center">
-          📱 Press &amp; hold the image in the new tab to save.
+      {errorMsg && (
+        <p className="text-[11px] mt-3 leading-[1.5] text-center" style={{ color: '#ff4a1c' }}>
+          {errorMsg}
         </p>
+      )}
+
+      {exportedUrl && (
+        <div className="mt-3">
+          <p className="text-[11px] text-muted mb-2 leading-[1.5] text-center">
+            📱 Long-press the image below to save it to Photos.
+          </p>
+          <img
+            src={exportedUrl}
+            alt="Session recap"
+            className="block w-full rounded-[10px]"
+            style={{ background: '#1b1813' }}
+          />
+        </div>
       )}
     </div>
   )
