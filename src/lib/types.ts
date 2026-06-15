@@ -8,6 +8,9 @@ export interface Profile {
   id: string
   username: string | null
   created_at: string
+  display_name?: string | null
+  handle?: string | null
+  current_level?: 'beginner' | 'intermediate' | 'advanced' | null
 }
 
 export interface Session {
@@ -16,6 +19,7 @@ export interface Session {
   session_date: string
   duration_minutes: number | null
   gym_name: string | null
+  gym_id?: string | null
   created_at: string
   attempts?: Attempt[]
 }
@@ -27,6 +31,10 @@ export interface Attempt {
   grade: string
   result: 'send' | 'fall' | 'project'
   logged_at: string
+  raw_grade?: string
+  v_grade?: number
+  grading_system?: string
+  gym_id?: string
 }
 
 export interface WorkoutLog {
@@ -45,4 +53,22 @@ export interface SyncItem {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: Record<string, any>
   timestamp: string
+}
+
+export type GymDirectoryEntry = {
+  id: string
+  name: string
+  slug: string
+  grading_system: string
+  created_at: string
+}
+
+export type UserGym = {
+  id: string
+  user_id: string
+  directory_id: string
+  is_home: boolean
+  name: string
+  slug: string
+  grading_system: string
 }
