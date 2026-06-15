@@ -1,6 +1,7 @@
 import { supabase } from './supabase'
 import { syncQueue } from './syncQueue'
-import type { StorageResult, Session, Attempt, WorkoutLog, Profile } from './types'
+import type { StorageResult, Session, Attempt, WorkoutLog, Profile, GymDirectoryEntry, UserGym } from './types'
+import { toSlug } from './gradeConversion'
 
 const CACHE = {
   sessionToday: 'grip-lab-session-today',
@@ -8,6 +9,7 @@ const CACHE = {
   workoutPfx:   'grip-lab-workout-',
   streak:       'grip-lab-streak',
   profile:      'grip-lab-profile',
+  gyms:         'grip-lab-gyms',
 } as const
 
 function readCache<T>(key: string): T | null {
@@ -148,7 +150,7 @@ export const sessionLog = {
   },
 
   async add(
-    attempt: Omit<Attempt, 'id' | 'user_id' | 'logged_at'>,
+    attempt: Omit<Attempt, 'id' | 'user_id' | 'logged_at' | 'session_id'>,
   ): Promise<StorageResult<Attempt>> {
     const userId = await currentUserId()
     if (!userId) return { data: null, error: 'Not authenticated', source: 'offline' }
@@ -382,5 +384,125 @@ export const userProfile = {
     }
 
     return { data: updated, error: null, source: navigator.onLine ? 'remote' : 'offline' }
+  },
+}
+
+// ---- GYM DIRECTORY ----
+export const gymDirectory = {
+  async findBySlug(slug: string): Promise<StorageResult<GymDirectoryEntry | null>> {
+    if (!navigator.onLine) return { data: null, error: 'Offline', source: 'offline' }
+    const { data, error } = await supabase
+      .from('gym_directory')
+      .select('*')
+      .eq('slug', slug)
+      .maybeSingle()
+    if (error) return { data: null, error: error.message, source: 'remote' }
+    return { data: data as GymDirectoryEntry | null, error: null, source: 'remote' }
+  },
+
+  async add(gym: { name: string; slug: string; grading_system: string }): Promise<StorageResult<GymDirectoryEntry>> {
+    if (!navigator.onLine) return { data: null, error: 'Offline', source: 'offline' }
+    const { data, error } = await supabase
+      .from('gym_directory')
+      .insert(gym)
+      .select()
+      .single()
+    if (error) return { data: null, error: error.message, source: 'remote' }
+    return { data: data as GymDirectoryEntry, error: null, source: 'remote' }
+  },
+}
+
+// ---- USER GYMS ----
+function flattenGym(raw: Record<string, unknown>): UserGym {
+  const dir = raw.gym_directory as Record<string, unknown>
+  return {
+    id:             raw.id as string,
+    user_id:        raw.user_id as string,
+    directory_id:   raw.directory_id as string,
+    is_home:        raw.is_home as boolean,
+    name:           dir.name as string,
+    slug:           dir.slug as string,
+    grading_system: dir.grading_system as string,
+  }
+}
+
+async function fetchAllGyms(): Promise<StorageResult<UserGym[]>> {
+  if (!navigator.onLine) {
+    return { data: readCache<UserGym[]>(CACHE.gyms) ?? [], error: null, source: 'offline' }
+  }
+  const userId = await currentUserId()
+  if (!userId) return { data: null, error: 'Not authenticated', source: 'offline' }
+  const { data, error } = await supabase
+    .from('gyms')
+    .select('*, gym_directory!directory_id(name, slug, grading_system)')
+    .eq('user_id', userId)
+  if (error) return { data: null, error: error.message, source: 'remote' }
+  const gyms = (data ?? []).map(flattenGym)
+  writeCache(CACHE.gyms, gyms)
+  return { data: gyms, error: null, source: 'remote' }
+}
+
+export const gymStorage = {
+  async getAll(): Promise<StorageResult<UserGym[]>> {
+    const cached = readCache<UserGym[]>(CACHE.gyms)
+    if (cached) {
+      fetchAllGyms().catch(() => {})
+      return { data: cached, error: null, source: 'cache' }
+    }
+    return fetchAllGyms()
+  },
+
+  async getHome(): Promise<StorageResult<UserGym | null>> {
+    const { data: all, error } = await this.getAll()
+    if (error) return { data: null, error, source: 'remote' }
+    return { data: (all ?? []).find(g => g.is_home) ?? null, error: null, source: 'cache' }
+  },
+
+  async add(gym: { name: string; grading_system: string; is_home?: boolean }): Promise<StorageResult<UserGym>> {
+    if (!navigator.onLine) return { data: null, error: 'Offline — connect to add a gym', source: 'offline' }
+    const userId = await currentUserId()
+    if (!userId) return { data: null, error: 'Not authenticated', source: 'offline' }
+
+    const slug = toSlug(gym.name)
+
+    let dirEntry: GymDirectoryEntry | null = null
+    const found = await gymDirectory.findBySlug(slug)
+    if (found.data) {
+      dirEntry = found.data
+    } else {
+      const created = await gymDirectory.add({ name: gym.name, slug, grading_system: gym.grading_system })
+      if (created.error || !created.data) return { data: null, error: created.error ?? 'Failed to create gym', source: 'remote' }
+      dirEntry = created.data
+    }
+
+    const { data, error } = await supabase
+      .from('gyms')
+      .upsert({ user_id: userId, directory_id: dirEntry.id, is_home: gym.is_home ?? false })
+      .select('*, gym_directory!directory_id(name, slug, grading_system)')
+      .single()
+
+    if (error) return { data: null, error: error.message, source: 'remote' }
+
+    const userGym = flattenGym(data as Record<string, unknown>)
+    const cached = readCache<UserGym[]>(CACHE.gyms) ?? []
+    writeCache(CACHE.gyms, [...cached.filter(g => g.id !== userGym.id), userGym])
+
+    return { data: userGym, error: null, source: 'remote' }
+  },
+
+  async setHome(id: string): Promise<StorageResult<void>> {
+    if (!navigator.onLine) return { data: null, error: 'Offline', source: 'offline' }
+    const userId = await currentUserId()
+    if (!userId) return { data: null, error: 'Not authenticated', source: 'offline' }
+
+    await supabase.from('gyms').update({ is_home: false }).eq('user_id', userId).eq('is_home', true)
+    const { error } = await supabase.from('gyms').update({ is_home: true }).eq('id', id).eq('user_id', userId)
+    if (error) return { data: null, error: error.message, source: 'remote' }
+
+    const cached = readCache<UserGym[]>(CACHE.gyms)
+    if (cached) {
+      writeCache(CACHE.gyms, cached.map(g => ({ ...g, is_home: g.id === id })))
+    }
+    return { data: undefined, error: null, source: 'remote' }
   },
 }
