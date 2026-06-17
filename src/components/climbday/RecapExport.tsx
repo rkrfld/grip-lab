@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
-import html2canvas from 'html2canvas'
-import { CompactOverlay } from '../recap/CompactOverlay'
+import { toBlob } from 'html-to-image'
+import { CompactOverlay, type RecapScheme } from '../recap/CompactOverlay'
 import { DetailedOverlay } from '../recap/DetailedOverlay'
 import { deriveRecap } from '../../lib/recapData'
 import type { Session, UserGym } from '../../lib/types'
@@ -26,6 +26,7 @@ export function RecapExport({ sessions, gyms, handle, onGoToSession }: RecapExpo
   const recent = useMemo(() => sessions.slice(0, 5), [sessions])
   const [selectedId, setSelectedId] = useState<string | null>(recent[0]?.id ?? null)
   const [variant, setVariant] = useState<Variant>('compact')
+  const [scheme, setScheme] = useState<RecapScheme>('original')
   const [busy, setBusy] = useState(false)
   const [exportedUrl, setExportedUrl] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
@@ -65,20 +66,19 @@ export function RecapExport({ sessions, gyms, handle, onGoToSession }: RecapExpo
     }
     try {
       if (document.fonts?.ready) await document.fonts.ready
-      const w = 480
-      const h = variant === 'compact' ? 200 : 340
-      const canvas = await html2canvas(captureRef.current, {
-        backgroundColor: null,
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        width: w,
-        height: h,
-        windowWidth: w,
-        windowHeight: h,
+      const rect = captureRef.current.getBoundingClientRect()
+      const blob = await toBlob(captureRef.current, {
+        pixelRatio: 2,
+        backgroundColor: 'transparent',
+        width: rect.width,
+        height: rect.height,
+        style: {
+          position: 'static',
+          left: 'auto',
+          top: 'auto',
+          transform: 'none',
+        },
       })
-
-      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'))
       if (!blob) {
         setErrorMsg('Could not render image.')
         return
@@ -149,7 +149,7 @@ export function RecapExport({ sessions, gyms, handle, onGoToSession }: RecapExpo
         </div>
       )}
 
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-2">
         {(['compact', 'detailed'] as Variant[]).map(v => (
           <button
             key={v}
@@ -166,6 +166,23 @@ export function RecapExport({ sessions, gyms, handle, onGoToSession }: RecapExpo
         ))}
       </div>
 
+      <div className="flex gap-2 mb-4">
+        {([['original', 'Original'], ['mono', 'Mono']] as Array<[RecapScheme, string]>).map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setScheme(key)}
+            className="flex-1 py-2 rounded-lg text-[12px] transition-all"
+            style={
+              scheme === key
+                ? { background: '#a3e63522', border: '1px solid #a3e63566', color: '#f3ede0' }
+                : { background: '#1b1813', border: '1px solid #2c2820', color: '#8a8273' }
+            }
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       <div
         className="rounded-[10px] mb-4 overflow-hidden flex items-center justify-center"
         style={{
@@ -178,11 +195,10 @@ export function RecapExport({ sessions, gyms, handle, onGoToSession }: RecapExpo
           style={{
             transform: 'scale(0.62)',
             transformOrigin: 'center center',
-            width: 480,
-            height: variant === 'compact' ? 200 : 340,
+            display: 'inline-block',
           }}
         >
-          <Overlay data={data} />
+          <Overlay data={data} scheme={scheme} />
         </div>
       </div>
 
@@ -192,14 +208,13 @@ export function RecapExport({ sessions, gyms, handle, onGoToSession }: RecapExpo
           position: 'fixed',
           left: '-9999px',
           top: 0,
-          width: 480,
-          height: variant === 'compact' ? 200 : 340,
+          display: 'inline-block',
           pointerEvents: 'none',
           opacity: 1,
         }}
         aria-hidden="true"
       >
-        <Overlay data={data} />
+        <Overlay data={data} scheme={scheme} />
       </div>
 
       <button

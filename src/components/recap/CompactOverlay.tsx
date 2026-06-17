@@ -1,38 +1,38 @@
 import type { RecapData } from '../../lib/recapData'
 
-interface Props { data: RecapData }
+export type RecapScheme = 'original' | 'mono'
+
+interface Props { data: RecapData; scheme?: RecapScheme }
 
 const LIME   = '#a3e635'
 const CHALK  = '#f3ede0'
-const MUTED  = '#8a8273'
-const DIM    = '#5a5448'
+const AMBER   = '#f59e0b'
 const BG     = 'rgba(14,13,11,0.78)'
 const BORDER = 'rgba(163,230,53,0.28)'
 const DISPLAY_FONT = '"Big Shoulders Display", Impact, sans-serif'
 const MONO_FONT    = '"DM Mono", "SF Mono", monospace'
 
-export function CompactOverlay({ data }: Props) {
+export function CompactOverlay({ data, scheme = 'original' }: Props) {
+  const isMono = scheme === 'mono'
   return (
     <div
       style={{
-        width: 480,
-        height: 200,
-        background: BG,
-        border: `1px solid ${BORDER}`,
+        background: isMono ? 'transparent' : BG,
+        border: isMono ? '1px solid transparent' : `1px solid ${BORDER}`,
         borderRadius: 18,
-        padding: '18px 28px 22px 28px',
+        padding: '18px 28px 14px 28px',
         boxSizing: 'border-box',
         color: CHALK,
         fontFamily: DISPLAY_FONT,
-        position: 'relative',
-        display: 'flex',
+        display: 'inline-flex',
         flexDirection: 'column',
+        gap: 22,
       }}
     >
       <div>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center' , gap: 8}}>
           <span style={{ width: 7, height: 7, borderRadius: 99, background: LIME, display: 'inline-block' }} />
-          <span style={{ fontFamily: MONO_FONT, fontSize: 11, lineHeight: 1, letterSpacing: '0.22em', color: MUTED, textTransform: 'uppercase', marginBottom: 4 }}>
+          <span style={{ fontFamily: MONO_FONT, fontSize: 11, lineHeight: 1, letterSpacing: '0.22em', color: CHALK, textTransform: 'uppercase' }}>
             GRIP LAB · SESSION
           </span>
         </div>
@@ -43,29 +43,24 @@ export function CompactOverlay({ data }: Props) {
         )}
       </div>
 
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 28 }}>
-          <Stat value={data.bestGrade ?? '—'} label="Best" valueColor={LIME} valueSize={56} />
-          <Divider />
-          <Stat value={String(data.totalSends)} label="Sends" valueColor={CHALK} valueSize={46} />
-          <Divider />
-          <Stat value={String(data.totalAttempts)} label="Attempts" valueColor={CHALK} valueSize={46} />
-        </div>
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 28 }}>
+        <Stat value={data.bestGrade ?? '—'} label="Best" valueColor={LIME} valueSize={56} />
+        <Divider />
+        <Stat value={String(data.totalSends)} label="Sends" valueColor={CHALK} valueSize={46} />
+        <Divider />
+        <Stat value={String(data.totalAttempts)} label="Attempts" valueColor={CHALK} valueSize={46} />
       </div>
 
       <div
         style={{
-          position: 'absolute',
-          bottom: 12,
-          right: 22,
           fontFamily: MONO_FONT,
           fontSize: 9,
-          lineHeight: 1,
           letterSpacing: '0.22em',
-          color: DIM,
+          color: CHALK,
+          textAlign: 'right',
         }}
       >
-        GRIP LAB
+        tracked on GRIP<span style={{ color: AMBER }}>LAB</span>
       </div>
     </div>
   )
@@ -77,7 +72,7 @@ function Stat({ value, label, valueColor, valueSize }: { value: string; label: s
       <span style={{ fontFamily: DISPLAY_FONT, fontWeight: 900, fontSize: valueSize, lineHeight: 1.05, color: valueColor, display: 'block' }}>
         {value}
       </span>
-      <span style={{ fontFamily: MONO_FONT, fontSize: 10, lineHeight: 1, letterSpacing: '0.16em', color: MUTED, textTransform: 'uppercase', display: 'block' }}>
+      <span style={{ fontFamily: MONO_FONT, fontSize: 10, lineHeight: 1, letterSpacing: '0.16em', color: CHALK, textTransform: 'uppercase', display: 'block' }}>
         {label}
       </span>
     </div>
