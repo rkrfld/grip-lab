@@ -11,9 +11,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
       manifest: {
-        name: 'GRIP LAB',
-        short_name: 'GRIP LAB',
-        description: 'Hand & forearm training for climbers',
+        name: 'Grip Lab',
+        short_name: 'Grip Lab',
+        description: 'Bouldering training & session tracker',
         theme_color: '#0e0d0b',
         background_color: '#0e0d0b',
         display: 'standalone',
@@ -21,7 +21,8 @@ export default defineConfig({
         start_url: '/',
         icons: [
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {

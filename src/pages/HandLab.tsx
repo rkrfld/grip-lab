@@ -61,8 +61,11 @@ const DEFAULT_TIMER_STATE: TimerState = {
 
 export function HandLab() {
   const navigate = useNavigate()
-  const [splash, setSplash] = useState(true)
-  const hideSplash = useCallback(() => setSplash(false), [])
+  const [splash, setSplash] = useState(() => !localStorage.getItem('grip:launched'))
+  const hideSplash = useCallback(() => {
+    localStorage.setItem('grip:launched', 'true')
+    setSplash(false)
+  }, [])
 
   const [selectedDay, setSelectedDay] = useState<DayName>(today)
   const [slideDir, setSlideDir] = useState<'left' | 'right'>('left')
