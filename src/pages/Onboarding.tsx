@@ -54,10 +54,12 @@ export function Onboarding() {
       current_level: level,
     })
     setProfileSubmitting(false)
+    localStorage.setItem('grip:show-install', 'true')
     navigate('/climb-day', { replace: true })
   }
 
   function handleSkipProfile() {
+    localStorage.setItem('grip:show-install', 'true')
     navigate('/climb-day', { replace: true })
   }
 

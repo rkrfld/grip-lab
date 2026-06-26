@@ -5,6 +5,7 @@ import type { AccentKey } from '../../components/ui'
 import { ACCENT_HEX } from '../../components/ui'
 import { gymStorage } from '../../lib/storage'
 import { useAuth } from '../../hooks/useAuth'
+import { PWAInstallPrompt } from '../../components/PWAInstallPrompt'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
@@ -43,6 +44,7 @@ function ModeCard({ icon, name, sub, accent, onClick }: ModeCardProps) {
 export function ClimbDay() {
   const navigate = useNavigate()
   const { signOut } = useAuth()
+  const showInstall = !!localStorage.getItem('grip:show-install') && !localStorage.getItem('grip:install-prompted')
 
   useEffect(() => {
     gymStorage.getAll().then(({ data, source }) => {
@@ -54,6 +56,7 @@ export function ClimbDay() {
 
   return (
     <AppShell accent="session">
+      {showInstall && <PWAInstallPrompt />}
       <BrandHeader
         brand="wallhatesme · grip lab"
         line1="CLIMB"
